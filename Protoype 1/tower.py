@@ -2,6 +2,7 @@ from pygame import *
 import math
 init()
 display.set_caption('Frontlines')
+font.init()
 
 class Tower:                              # creates a tower class
     def __init__(self,pos):
@@ -91,9 +92,11 @@ class Enemy:
 
 class MainLoop:
     def __init__(self):
+        font.init()
         self.exit_game = False
         self.game_screen = display.set_mode((1288,728))
         self.map = image.load("map.png")
+        self.font = font.Font(None,36)
         self.tower_selection = TowerSelection()
         self.select_rect = Rect(1000,0,288,728)
         self.tower1 = image.load("towerDefense_tile249.png")
@@ -107,7 +110,6 @@ class MainLoop:
         draw.rect(self.game_screen, (0,0,0), self.select_rect)
         self.game_screen.blit(self.tower1, self.tower1_rect)
         self.game_screen.blit(self.tower2, self.tower2_rect)
-        font = font.Font(None,36)
         cost1 = font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
         cost2 = font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
         self.game_screen.blit(cost1, (1150,65))
@@ -119,10 +121,9 @@ class MainLoop:
                 if e.type == QUIT:
                     self.exit_game = True
                 elif e.type == MOUSEBUTTONDOWN:
-                    mouse_clicked = mouse.get_pressed()[0]
-                    if mouse_clicked == True:
-                        select = TowerSelection()
-                        select.select_tower()
+                    mouse_pos = mouse.get_pos()
+                    if e.button == 1:
+                        self.tower_selection.selected_tower(mouse_pos)
                 
                 self.game_screen.blit(self.map,(0,0))
                 self.drawTowerbox()
@@ -130,8 +131,5 @@ class MainLoop:
 
 loop = MainLoop()
 loop.gamescreen()
-
-
-score_text = font.render("Score: " + str(player_score), True, (255, 255, 255))  
 
 
