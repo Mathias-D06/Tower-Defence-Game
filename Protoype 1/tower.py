@@ -108,7 +108,11 @@ class MainLoop:
         self.game_screen.blit(self.tower1, self.tower1_rect)
         self.game_screen.blit(self.tower2, self.tower2_rect)
         font = font.Font(None,36)
-        cost1 = font.render()        
+        cost1 = font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
+        cost2 = font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
+        self.game_screen.blit(cost1, (1150,65))
+        self.game_screen.blit(cost2, (1150,165))
+
     def gamescreen(self):
         while not self.exit_game:
             for e in event.get():
@@ -121,12 +125,13 @@ class MainLoop:
                         select.select_tower()
                 
                 self.game_screen.blit(self.map,(0,0))
+                self.drawTowerbox()
                 display.flip()
 
 loop = MainLoop()
 loop.gamescreen()
 
 
-
+score_text = font.render("Score: " + str(player_score), True, (255, 255, 255))  
 
 
