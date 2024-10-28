@@ -47,15 +47,14 @@ class TowerSelection:                            # class specific for the select
     def __init__(self):
         self.selected_tower = None                        # set the tower used as none initially
         self.money = 250                                # set money to the starting number
+        self.tower1_rect = None
+        self.tower2_rect = None
     
-    def select_tower(self,pos):
-        self.x, self.y = mouse.get_pos()
-    
-    def selected_tower(self,tower_type):
-        if tower_type == "Tower1":
-            self.selected_tower = self.type1                   # if the tower type selected is the first tower then the seleted tower is set as the first tower
-        elif tower_type == "Tower2":
-            self.selected_tower = self.type2                      # else use the second tower
+    def selected_tower(self,pos):
+        if self.tower1_rect and self.tower1_rect.collidepoint(pos):# if the tower type selected is the first tower then the seleted tower is set as the first tower
+            self.selected_tower = self.type1                   
+        elif self.tower2_rect and self.tower2_rect.collidepoint(pos):# else use the second tower
+            self.selected_tower = self.type2                      
     
     def place_tower(self):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
@@ -77,7 +76,7 @@ class TowerSelection:                            # class specific for the select
                     
 class Enemy:
     def __init__(self,image):
-        self.image = image.load("Tower-Defence\towerDefense_tile248.png")
+        self.image = image.load("towerDefense_tile248.png")
         self.health = 40
         self.number = 4
         self.speed = 6
@@ -95,6 +94,21 @@ class MainLoop:
         self.exit_game = False
         self.game_screen = display.set_mode((1288,728))
         self.map = image.load("map.png")
+        self.tower_selection = TowerSelection()
+        self.select_rect = Rect(1000,0,288,728)
+        self.tower1 = image.load("towerDefense_tile249.png")
+        self.tower2 = image.load("towerDefense_tile250.png")
+        self.tower1_rect = Rect(1050,50,64,64)
+        self.tower2_rect = Rect(1050,150,64,64)
+        self.tower_selection.tower1_rect = self.tower1_rect
+        self.tower_selection.tower2_rect = self.tower2_rect
+
+    def drawTowerbox(self):
+        draw.rect(self.game_screen, (0,0,0), self.select_rect)
+        self.game_screen.blit(self.tower1, self.tower1_rect)
+        self.game_screen.blit(self.tower2, self.tower2_rect)
+        font = font.Font(None,36)
+        cost1 = font.render()        
     def gamescreen(self):
         while not self.exit_game:
             for e in event.get():
