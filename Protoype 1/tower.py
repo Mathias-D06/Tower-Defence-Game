@@ -92,7 +92,6 @@ class Enemy:
 
 class MainLoop:
     def __init__(self):
-        font.init()
         self.exit_game = False
         self.game_screen = display.set_mode((1288,728))
         self.map = image.load("map.png")
