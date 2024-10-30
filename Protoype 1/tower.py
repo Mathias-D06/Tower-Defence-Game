@@ -51,24 +51,24 @@ class TowerSelection(Tower):                            # class specific for the
         self.tower1_rect = None
         self.tower2_rect = None
     
-    def selected_tower(self,pos):
-        if self.tower1_rect and self.tower1_rect.collidepoint(pos):# if the tower type selected is the first tower then the seleted tower is set as the first tower
+    def selected_tower(self):
+        if self.tower1_rect and self.tower1_rect.collidepoint(mouse_pos):# if the tower type selected is the first tower then the seleted tower is set as the first tower
             self.selected_tower = self.type1                   
-        elif self.tower2_rect and self.tower2_rect.collidepoint(pos):# else use the second tower
+        elif self.tower2_rect and self.tower2_rect.collidepoint(mouse_pos):# else use the second tower
             self.selected_tower = self.type2                      
     
     def place_tower(self):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
             if self.money >= self.type1_cost:
-                if self.game_map.pos_valid(pos) == True:                  # it will use the validation function to check the position that is selected by the user
-                    self.game_map.add_tower(selected_tower,pos)
+                if self.game_map.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
+                    self.game_map.add_tower(selected_tower,mouse_pos)
                     self.money -= self.type1_cost                      #  it will then take the cost away from the money owned
                     self.selected_tower.draw()
                     selected_tower = None                            # it will reset the selected tower back to none
         elif self.selected_tower == self.type2:                           # this block of code is repeated for the second type of tower
             if self.money >= self.type2_cost:                           
-                if self.game_map.pos_valid(pos) == True:
-                    self.game_map.add_tower(selected_tower,pos)             
+                if self.game_map.pos_valid(mouse_pos) == True:
+                    self.game_map.add_tower(selected_tower,mouse_pos)             
                     self.money -= self.type2_cost
                     self.selected_tower.draw()
                     selected_tower = None
@@ -97,22 +97,24 @@ class MainLoop:
         self.map = image.load("map.png")
         self.font = font.Font(None,36)
         self.tower_selection = TowerSelection()
-        self.select_rect = Rect(1000,0,288,728)
+        self.select_rect = Rect(400,575,488,153)
         self.tower1 = image.load("towerDefense_tile249.png")
         self.tower2 = image.load("towerDefense_tile250.png")
-        self.tower1_rect = Rect(1050,50,32,32)
-        self.tower2_rect = Rect(1050,150,32,32)
+        self.tower1_rect = Rect(450,600,64,64)
+        self.tower2_rect = Rect(750,600,64,64)
         self.tower_selection.tower1_rect = self.tower1_rect
         self.tower_selection.tower2_rect = self.tower2_rect
 
     def drawTowerbox(self):
         draw.rect(self.game_screen, (0,0,0), self.select_rect)
+        draw.rect(self.game_screen, (255, 255, 255), self.tower1_rect)
+        draw.rect(self.game_screen, (255, 255, 255), self.tower2_rect)
         self.game_screen.blit(self.tower1, self.tower1_rect)
         self.game_screen.blit(self.tower2, self.tower2_rect)
         cost1 = self.font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
         cost2 = self.font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
-        self.game_screen.blit(cost1, (1150,65))
-        self.game_screen.blit(cost2, (1150,165))
+        self.game_screen.blit(cost1, (430,685))
+        self.game_screen.blit(cost2, (730,685))
 
     def gamescreen(self):
         while not self.exit_game:
