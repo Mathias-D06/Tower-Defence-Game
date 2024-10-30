@@ -5,10 +5,9 @@ display.set_caption('Frontlines')
 font.init()
 
 class Tower:                              # creates a tower class
-    def __init__(self,pos):
+    def __init__(self):
         self.range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self.damage = 20
-        self.pos = pos
         self.target = None     # initialy the targeted enemy is set to none as it will be changed when an enemy is near
         self.type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self.type2 = image.load("towerDefense_tile250.png")
@@ -16,11 +15,11 @@ class Tower:                              # creates a tower class
         self.type1_cost = 100
         self.type2_cost = 150
     
-    def inRange(self,enemy):
+    def inRange(self):
         centre_x = self.tower.pos[0] + self.type1.get_height()//2          # to calculate the the centre of the images we take the bottom left corner co-ordinates and add in the height and width
-        centre_y = self.tower.pos[1] + self.type2.get_width()//2
+        centre_y = self.tower.pos[1] + self.type1.get_width()//2
         enemy_centre_x = self.enemy.x + self.enemy.image.get_height()//2        # do the same for the enemy centre
-        enemy_centre_y = self.enemy.y + enemy.image.get_width()//2
+        enemy_centre_y = self.enemy.y + self.enemy.image.get_width()//2
         distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)       # using triganometry to calucate the distance between the enemy and tower
         return distance <= self.range
     def attack(self,enemy,inRange):                       # using the inRange() fucntion attack the nearest tower 
@@ -44,8 +43,9 @@ class Tower:                              # creates a tower class
                 return enemy
         return None
 
-class TowerSelection:                            # class specific for the selection of towers by the player
+class TowerSelection(Tower):                            # class specific for the selection of towers by the player
     def __init__(self):
+        Tower.__init__(self)                             # makes sure that all attributes are inherited correctly
         self.selected_tower = None                        # set the tower used as none initially
         self.money = 250                                # set money to the starting number
         self.tower1_rect = None
@@ -65,10 +65,10 @@ class TowerSelection:                            # class specific for the select
                     self.money -= self.type1_cost                      #  it will then take the cost away from the money owned
                     self.selected_tower.draw()
                     selected_tower = None                            # it will reset the selected tower back to none
-        elif self.selected_tower == self.type2:                           
+        elif self.selected_tower == self.type2:                           # this block of code is repeated for the second type of tower
             if self.money >= self.type2_cost:                           
                 if self.game_map.pos_valid(pos) == True:
-                    self.game_map.add_tower(selected_tower,pos)             # this code is repeated for the second type of tower
+                    self.game_map.add_tower(selected_tower,pos)             
                     self.money -= self.type2_cost
                     self.selected_tower.draw()
                     selected_tower = None
@@ -77,12 +77,12 @@ class TowerSelection:                            # class specific for the select
                     
 class Enemy:
     def __init__(self,image):
-        self.image = image.load("towerDefense_tile248.png")
-        self.health = 40
-        self.number = 4
+        self.image = image.load("towerDefense_tile248.png")         # the sprite of the enemies are pre set like the tower images
+        self.health = 40                                           # the health is set to be a constant
+        self.number = 4                                             # the number and speed are to be vaiable as they will change as the round goes on
         self.speed = 6
-        self.pos = []
-        self.round = round
+        self.pos = []                                              # the positions of the enemies will be stored in an array
+        self.round = round                                         # currently a place holder for the round variable
 
                     
 
@@ -100,8 +100,8 @@ class MainLoop:
         self.select_rect = Rect(1000,0,288,728)
         self.tower1 = image.load("towerDefense_tile249.png")
         self.tower2 = image.load("towerDefense_tile250.png")
-        self.tower1_rect = Rect(1050,50,64,64)
-        self.tower2_rect = Rect(1050,150,64,64)
+        self.tower1_rect = Rect(1050,50,32,32)
+        self.tower2_rect = Rect(1050,150,32,32)
         self.tower_selection.tower1_rect = self.tower1_rect
         self.tower_selection.tower2_rect = self.tower2_rect
 
@@ -109,8 +109,8 @@ class MainLoop:
         draw.rect(self.game_screen, (0,0,0), self.select_rect)
         self.game_screen.blit(self.tower1, self.tower1_rect)
         self.game_screen.blit(self.tower2, self.tower2_rect)
-        cost1 = font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
-        cost2 = font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
+        cost1 = self.font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
+        cost2 = self.font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
         self.game_screen.blit(cost1, (1150,65))
         self.game_screen.blit(cost2, (1150,165))
 
