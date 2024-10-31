@@ -3,6 +3,7 @@ import math
 init()
 display.set_caption('Frontlines')
 font.init()
+clock = time.Clock()
 
 class Tower:                              # creates a tower class
     def __init__(self):
@@ -50,14 +51,15 @@ class TowerSelection(Tower):                            # class specific for the
         self.money = 250                                # set money to the starting number
         self.tower1_rect = None
         self.tower2_rect = None
-    
-    def selected_tower(self):
-        if self.tower1_rect and self.tower1_rect.collidepoint(mouse_pos):# if the tower type selected is the first tower then the seleted tower is set as the first tower
-            self.selected_tower = self.type1                   
-        elif self.tower2_rect and self.tower2_rect.collidepoint(mouse_pos):# else use the second tower
-            self.selected_tower = self.type2                      
-    
-    def place_tower(self):
+    def select_tower(self, mouse_pos):
+              if self.tower1_rect and self.tower1_rect.collidepoint(mouse_pos):
+                  self.selected_tower = self.type1
+              elif self.tower2_rect and self.tower2_rect.collidepoint(mouse_pos):
+                  self.selected_tower = self.type2
+    def drawTower_preview(self,game_screen,mouse_pos):
+        if self.selected_tower:
+            self.game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32)) 
+    def place_tower(self,mouse_pos):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
             if self.money >= self.type1_cost:
                 if self.game_map.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
@@ -82,13 +84,7 @@ class Enemy:
         self.number = 4                                             # the number and speed are to be vaiable as they will change as the round goes on
         self.speed = 6
         self.pos = []                                              # the positions of the enemies will be stored in an array
-        self.round = round                                         # currently a place holder for the round variable
-
-                    
-
-
-    
-
+        self.round = round                                           # currently a place holder for the round variable
 
 class MainLoop:
     def __init__(self):
@@ -124,11 +120,16 @@ class MainLoop:
                 elif e.type == MOUSEBUTTONDOWN:
                     mouse_pos = mouse.get_pos()
                     if e.button == 1:
-                        self.tower_selection.selected_tower(mouse_pos)
+                        self.tower_selection.select_tower(mouse_pos)
+                elif e.type == KEYDOWN:
+                    if e.key == K_ESCAPE:
+                        self.tower_selection.selected_tower = None
                 
-                self.game_screen.blit(self.map,(0,0))
-                self.drawTowerbox()
-                display.flip()
+            self.game_screen.blit(self.map,(0,0))
+            self.drawTowerbox()
+            self.tower_selection.drawTower_preview(self.game_screen)
+            display.flip()
+            clock.tick(60)
 
 loop = MainLoop()
 loop.gamescreen()
