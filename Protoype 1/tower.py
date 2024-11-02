@@ -88,39 +88,39 @@ class Enemy:
 
 class MainLoop:
     def __init__(self):
-        self.exit_game = False
-        self.game_screen = display.set_mode((1288,728))
-        self.map = image.load("map.png")
-        self.font = font.Font(None,36)
-        self.tower_selection = TowerSelection()
-        self.select_rect = Rect(400,575,488,153)
+        self.exit_game = False                                  # the exit game variable is set to false initially
+        self.game_screen = display.set_mode((1288,728))             # the game screen is set to a certain size
+        self.map = image.load("map.png")                            # the map is loaded with an image
+        self.font = font.Font(None,36)                              # the font is set to a size of 36
+        self.tower_selection = TowerSelection()                     # will inherit from the TowerSelection class for its attributes
+        self.select_rect = Rect(400,575,488,153)                   # this is the black rectangle which will be the background for the selection (it will be at the bottom)
         self.tower1 = image.load("towerDefense_tile249.png")
         self.tower2 = image.load("towerDefense_tile250.png")
-        self.tower1_rect = Rect(450,600,64,64)
+        self.tower1_rect = Rect(450,600,64,64)                    # this is the outline for the towers in the tower selection box
         self.tower2_rect = Rect(750,600,64,64)
-        self.tower_selection.tower1_rect = self.tower1_rect
-        self.tower_selection.tower2_rect = self.tower2_rect
+        self.tower_selection.tower1_rect = self.tower1_rect        # makes it so that the TowerSelection class can use it for selection
+        self.tower_selection.tower2_rect = self.tower2_rect    
 
     def drawTowerbox(self):
-        draw.rect(self.game_screen, (0,0,0), self.select_rect)
-        draw.rect(self.game_screen, (255, 255, 255), self.tower1_rect)
+        draw.rect(self.game_screen, (0,0,0), self.select_rect)     # this draws the black rectangle
+        draw.rect(self.game_screen, (255, 255, 255), self.tower1_rect)  # this is the white rectangle for the outline
         draw.rect(self.game_screen, (255, 255, 255), self.tower2_rect)
-        self.game_screen.blit(self.tower1, self.tower1_rect)
+        self.game_screen.blit(self.tower1, self.tower1_rect)     # this blits it to the screen
         self.game_screen.blit(self.tower2, self.tower2_rect)
-        cost1 = self.font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))
+        cost1 = self.font.render("Cost: " + str(self.tower_selection.type1_cost), True, (255,255,255))  # this draws the cost of each tower to the screen
         cost2 = self.font.render("Cost: " + str(self.tower_selection.type2_cost), True, (255,255,255))
         self.game_screen.blit(cost1, (430,685))
         self.game_screen.blit(cost2, (730,685))
 
     def gamescreen(self):
         while not self.exit_game:
-            mouse_pos = mouse.get_pos()
+            mouse_pos = mouse.get_pos()  # gets the mouse position constantly while the game is running
             for e in event.get():
                 if e.type == QUIT:
-                    self.exit_game = True
+                    self.exit_game = True   # will quit the game
                 elif e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
-                        self.tower_selection.select_tower(mouse_pos)
+                        self.tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
                         self.tower_selection.selected_tower = None
