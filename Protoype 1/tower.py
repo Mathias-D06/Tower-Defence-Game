@@ -58,7 +58,7 @@ class TowerSelection(Tower):                            # class specific for the
                   self.selected_tower = self.type2
     def drawTower_preview(self,game_screen,mouse_pos):
         if self.selected_tower:
-            self.game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32)) 
+            game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32)) 
     def place_tower(self,mouse_pos):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
             if self.money >= self.type1_cost:
@@ -114,11 +114,11 @@ class MainLoop:
 
     def gamescreen(self):
         while not self.exit_game:
+            mouse_pos = mouse.get_pos()
             for e in event.get():
                 if e.type == QUIT:
                     self.exit_game = True
                 elif e.type == MOUSEBUTTONDOWN:
-                    mouse_pos = mouse.get_pos()
                     if e.button == 1:
                         self.tower_selection.select_tower(mouse_pos)
                 elif e.type == KEYDOWN:
@@ -127,7 +127,7 @@ class MainLoop:
                 
             self.game_screen.blit(self.map,(0,0))
             self.drawTowerbox()
-            self.tower_selection.drawTower_preview(self.game_screen)
+            self.tower_selection.drawTower_preview(self.game_screen,mouse_pos)
             display.flip()
             clock.tick(60)
 
