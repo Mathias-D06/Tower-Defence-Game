@@ -5,7 +5,7 @@ display.set_caption('Frontlines')
 font.init()
 clock = time.Clock()
 
-class Tower:                              # creates a tower class
+class Tower:                              # creates the tower class
     def __init__(self):
         self.range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self.damage = 20
@@ -123,13 +123,13 @@ class MainLoop:
                         self.tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
-                        self.tower_selection.selected_tower = None
+                        self.tower_selection.selected_tower = None  # will cancel the selection if the escape button is pressed
                 
-            self.game_screen.blit(self.map,(0,0))
-            self.drawTowerbox()
-            self.tower_selection.drawTower_preview(self.game_screen,mouse_pos)
+            self.game_screen.blit(self.map,(0,0))              # will blit the map to the screen
+            self.drawTowerbox()                                 # will run the tower box function
+            self.tower_selection.drawTower_preview(self.game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             display.flip()
-            clock.tick(60)
+            clock.tick(60)                                  # sets the refresh rate to 60hz
 
 loop = MainLoop()
 loop.gamescreen()
