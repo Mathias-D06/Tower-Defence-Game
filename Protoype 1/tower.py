@@ -15,6 +15,7 @@ class Tower:                              # creates the tower class
         self.projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
         self.type1_cost = 100
         self.type2_cost = 150
+        self.towers = []
     
     def inRange(self):
         centre_x = self.tower.pos[0] + self.type1.get_height()//2          # to calculate the the centre of the images we take the bottom left corner co-ordinates and add in the height and width
@@ -57,18 +58,16 @@ class TowerSelection(Tower):                            # class specific for the
                   self.selected_tower = self.type2
     def drawTower_preview(self,game_screen,mouse_pos):
         if self.selected_tower:
-            game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32)) 
+            game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  
     def place_tower(self,mouse_pos,game_screen):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
             if self.money >= self.type1_cost:
-                if self.game_map.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
-                    game_screen.blit(self.select_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
+                if self.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
                     self.money -= self.type1_cost                      #  it will then take the cost away from the money owned
                     self.selected_tower = None                            # it will reset the selected tower back to none
         elif self.selected_tower == self.type2:                           # this block of code is repeated for the second type of tower
             if self.money >= self.type2_cost:                           
-                if self.game_map.pos_valid(mouse_pos) == True:            
-                    game_screen.blit(self.select_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
+                if self.pos_valid(mouse_pos) == True:            
                     self.money -= self.type2_cost
                     self.selected_tower = None
 
@@ -126,7 +125,6 @@ class MainLoop:
             self.game_screen.blit(self.map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self.tower_selection.drawTower_preview(self.game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
-             
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
