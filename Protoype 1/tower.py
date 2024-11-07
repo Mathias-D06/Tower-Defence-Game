@@ -71,9 +71,7 @@ class TowerSelection(Tower):                            # class specific for the
                     game_screen.blit(self.select_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
                     self.money -= self.type2_cost
                     self.selected_tower = None
-    
 
-                    
 class Enemy:
     def __init__(self,image):
         self.image = image.load("towerDefense_tile248.png")         # the sprite of the enemies are pre set like the tower images
@@ -117,9 +115,9 @@ class MainLoop:
                     self.exit_game = True   # will quit the game
                 elif e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
-                        if self.tower_selection.selected_tower:
+                        if self.tower_selection.selected_tower: # checks to see if there is a tower that has been selected
                             self.tower_selection.place_tower(self.game_screen,mouse_pos)  # this will run the code to then place the tower onto the game map
-                        else:    
+                        else:                                                   # if not
                             self.tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
