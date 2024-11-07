@@ -63,19 +63,21 @@ class TowerSelection(Tower):                            # class specific for the
             game_screen.blit(self.selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  
     def pos_valid(self,mouse_pos):
         for tower in self.towers:
+            if self.towers[tower][5].collidepoint(mouse_pos):
+                self.selected_tower == None 
     
     def place_tower(self,mouse_pos,game_screen,centre_x,centre_y):
         if self.selected_tower == self.type1:                        # if the first tower will be set as type 1
             if self.money >= self.type1_cost:
                 if self.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
-                    self.new_tower = Tower(centre_x,centre_y,self.image_height,self.image_width,self.type1,)
+                    self.new_tower = Tower(centre_x,centre_y,self.image_height,self.image_width,self.type1,self.tower1_rect)
                     self.towers.append(self.selected_tower)
                     self.money -= self.type1_cost                      #  it will then take the cost away from the money owned
                     self.selected_tower = None                            # it will reset the selected tower back to none
         elif self.selected_tower == self.type2:                           # this block of code is repeated for the second type of tower
             if self.money >= self.type2_cost:                           
                 if self.pos_valid(mouse_pos) == True:            
-                    self.new_tower = Tower(centre_x,centre_y,self.image_height,self.image_width,self.type2)
+                    self.new_tower = Tower(centre_x,centre_y,self.image_height,self.image_width,self.type2,self.tower2_rect)
                     self.towers.append(self.selected_tower)
                     self.money -= self.type2_cost
                     self.selected_tower = None
