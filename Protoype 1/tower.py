@@ -26,6 +26,7 @@ class Tower:                              # creates the tower class
         enemy_centre_y = self._enemy.y + self._enemy.image.get_width()//2
         distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)       # using triganometry to calucate the distance between the enemy and tower
         return distance <= self.__range
+    
     def attack(self,enemy,inRange):                       # using the inRange() fucntion attack the nearest tower 
         self._willhit = inRange(self,target,enemy[target])
         if self.__target and self._willhit:                                 # if an enemy has been found and it's in range then deal damage
@@ -39,6 +40,7 @@ class Tower:                              # creates the tower class
                 self.__target = self._take_damage(self.__damage)                     # that target will then take damage
             else:
                 self.__target = None
+    
     def newTarget(self):                                                    # a function to assign a new enemy as the target
         self.__area = inRange(self,enemy)
         for enemy in enemies:                                           # by checking a valid enemy within the group of enemies it will return the nearest enemy 
@@ -57,15 +59,19 @@ class TowerSelection(Tower):                            # class specific for the
     def select_tower(self, mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
                   self._selected_tower = self._type1                                    # set it to type 1
-              elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower
+              elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  # checks to see if there is a selected tower
                   self._selected_tower = self._type2
     
-    def drawTower_preview(self,game_screen,mouse_pos):
-        if self._selected_tower:                                                            # checks to see if there is a selected tower
-            game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  # if so then use the mouse position to blit an image of the tower to screen
+    def drawTower_preview(self, game_screen, mouse_pos):
+        if self._selected_tower:
+            self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)
+            if (mouse_pos[0] >= 32 and mouse_pos[0] <= (1288 - 32) and mouse_pos[1] >= 32 and mouse_pos[1] <= (728 -32)):
+                game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  # if so then use the mouse position to blit an image of the tower to screen
     
     def pos_valid(self,mouse_pos):
         self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)   # creates a rect for the preview tower using the mouse position
+        if (mouse_pos[0] < 32 or mouse_pos[0] > 1288 or mouse_pos[1] < 32 or mouse_pos[1] > 728):
+            return False
         for tower in self._towers:                                          # iterates through the towers array 
             self._currentRect = Rect(tower[0] - 32, tower[1] - 32, 64, 64)       # sets a rect around each existing tower using each of the tower index
             if self._previewRect.colliderect(self._currentRect):                      # checks to see if there is a collision
@@ -104,7 +110,7 @@ class Enemy:
 class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
-        self.__game_screen = display.set_mode((1288,728))             # the game screen is set to a certain size
+        self._game_screen = display.set_mode((1288,728))             # the game screen is set to a certain size
         self.__map = image.load("map.png")                            # the map is loaded with an image
         self.__font = font.Font(None,36)                              # the font is set to a size of 36
         self.__tower_selection = TowerSelection()                     # will inherit from the TowerSelection class for its attributes
@@ -117,15 +123,15 @@ class MainLoop:
         self.__tower_selection._tower2_rect = self.__tower2_rect    
 
     def drawTowerbox(self):
-        draw.rect(self.__game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
-        draw.rect(self.__game_screen, (255, 255, 255), self.__tower1_rect)  # this is the white rectangle for the outline
-        draw.rect(self.__game_screen, (255, 255, 255), self.__tower2_rect)
-        self.__game_screen.blit(self.__tower1, self.__tower1_rect)     # this blits it to the screen
-        self.__game_screen.blit(self.__tower2, self.__tower2_rect)
+        draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
+        draw.rect(self._game_screen, (255, 255, 255), self.__tower1_rect)  # this is the white rectangle for the outline
+        draw.rect(self._game_screen, (255, 255, 255), self.__tower2_rect)
+        self._game_screen.blit(self.__tower1, self.__tower1_rect)     # this blits it to the screen
+        self._game_screen.blit(self.__tower2, self.__tower2_rect)
         cost1 = self.__font.render("Cost: " + str(self.__tower_selection._type1_cost), True, (255,255,255))  # this draws the cost of each tower to the screen
         cost2 = self.__font.render("Cost: " + str(self.__tower_selection._type2_cost), True, (255,255,255))
-        self.__game_screen.blit(cost1, (430,685))
-        self.__game_screen.blit(cost2, (730,685))
+        self._game_screen.blit(cost1, (430,685))
+        self._game_screen.blit(cost2, (730,685))
 
     def gamescreen(self):
         while not self.__exit_game:
@@ -136,16 +142,16 @@ class MainLoop:
                 elif e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
                         if self.__tower_selection._selected_tower: # checks to see if there is a tower that has been selected
-                            self.__tower_selection.place_tower(mouse_pos,self.__game_screen)  # this will run the code to then place the tower onto the game map
+                            self.__tower_selection.place_tower(mouse_pos,self._game_screen)  # this will run the code to then place the tower onto the game map
                         else:                                                   # if not
                             self.__tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
                         self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
                 
-            self.__game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
+            self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
-            self.__tower_selection.drawTower_preview(self.__game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
+            self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
