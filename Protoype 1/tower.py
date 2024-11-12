@@ -97,43 +97,41 @@ class TowerSelection(Tower):                            # class specific for the
                     self._money -= self._type2_cost
                     self._selected_tower = None
 
-class Enemy:
-    def __init__(self,random_x,random_y):
-        self._image = image.load("towerDefense_tile248.png")         # the sprite of the enemies are pre set like the tower images
-        self._health = 40                                           # the health is set to be a constant
-        self._number = 4                                             # the number and speed are to be vaiable as they will change as the round goes on
-        self._speed = 6                                           # the enemy speed is set to 0 
-        self._pos = [random_x,random_y]                        # the positions of the enemies will be stored in an array 
-        
+class EnemyGroup:    
+    def __init__(self):
+        self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
+        self._health = 40                                   # the health is set to be a constant
+        self._round = 1                                          # sets the number of rounds to 1
+        self._speed = 6                                         # the enemy speed is set to 6
+        self._enemies = []
+        self._number = 4            # the positions of the enemies will be stored in an array
     
-    def take_damage(self):
-        self._health -= self._damage
+    def take_damage(self,damage):
+        self._health -= damage
         return self._health <= 0
-
+    
     def movement(self):
         pass
-
-class EnemyGroup(Enemy):    
-    def __init__(self):
-        Enemy.__init__(self)
-        self._round = 1                                          # sets the number of rounds to 1
-        self._enemies = []
     
     def spawn_enemy(self):
-        self.__num_enemies = self._number + self._round
-        for _ in range(self.__num_enemies):
-            random_x = random.randint(379,409)             # the height used is set to a random int near the start if the path and same for the width 
-            random_y = random.randint(0,10)
-            enemy = Enemy(random_x,random_y)
-            self._enemies.append(enemy)
+        self.__numEnemies = self._number + self._round
+        self._health += self._round
+        for _ in range(self.__numEnemies):
+            random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
+            random_y = random.randint(379,409)
+            self._pos = [random_x,random_y]             # the positions of the enemies will be stored in an array
+            self._enemies.append(self._pos)
     
-    def updateEnemies(self):
-        self._enemies = [enemy for enemy in self._enemies if enemy._health > 0]
-        for enemy in self._enemies:
-            enemy.move()
-            self.stamped_surface.blit(enemy._image, enemy._pos)
-
-
+    def updateEnemies(self,game_screen):
+        alive_enemies = []                    # this is the array that only holds the alive enemies, it holds the x and y positions of the enemies
+        for self._pos in self._enemies:             # iterates though the original list
+            if self._health > 0:                   # checks the enemies that are alive 
+                alive_enemies.append(self._pos)       # adds it to the list
+        self._enemies = alive_enemies          # it then updates the older list
+        for self._pos in self._enemies:                 # iterates through the current enemies
+            self.movement()                            # calls the movement function for the alive ones
+            game_screen.blit(self._image,self._pos)       # updates the screen removing "dead" enemies
+            
 class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
@@ -176,13 +174,14 @@ class MainLoop:
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
                         self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
-              
+            if not self.__enemyGroup._enemies:
+                self.__enemyGroup.spawn_enemy() 
+            
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
-            self._game_screen.blit(self.__enemy.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
-            self.__enemyGroup.updateEnemies()
+            self.__enemyGroup.updateEnemies(self._game_screen)
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
