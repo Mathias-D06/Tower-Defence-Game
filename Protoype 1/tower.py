@@ -55,6 +55,10 @@ class TowerSelection(Tower):                            # class specific for the
         self._money = 250                                # set money to the starting number
         self._tower1_rect = None                        # sets the initial rect for the 2 towers as None
         self._tower2_rect = None
+        self._image_rect1 = self._type1.get_rect()
+        self._image_rect2 = self._type2.get_rect()
+        self.stamped_surface = Surface((1288,728), SRCALPHA)
+        self.stamped_surface.fill((0,0,0,0))
     
     def select_tower(self, mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
@@ -78,25 +82,21 @@ class TowerSelection(Tower):                            # class specific for the
                 return False
         return True
     
-    def place_tower(self,mouse_pos,game_screen):
-        for e in event.get():    
-            if e.type == MOUSEBUTTONDOWN:        
-                if self._selected_tower == self._type1:                        # if the first tower will be set as type 1
-                    if self._money >= self._type1_cost:                         # checks if the player has enough money
-                        if self.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
-                            if e.button == 1: 
-                                game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
-                                self._towers.append((mouse_pos[0], mouse_pos[1], self._type1))
-                                self._money -= self._type1_cost                      #  it will then take the cost away from the money owned
-                                self._selected_tower = None                            # it will reset the selected tower back to none
-            elif self._selected_tower == self._type2:                           # this block of code is repeated for the second type of tower
-                if self._money >= self._type2_cost:                           
-                    if self.pos_valid(mouse_pos) == True:            
-                            if e.button == 1:
-                                game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
-                                self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
-                                self._money -= self._type2_cost
-                                self._selected_tower = None
+    def place_tower(self, mouse_pos):
+        if self._selected_tower:
+            if self._selected_tower == self._type1 and self._money >= self._type1_cost:
+                if self.pos_valid(mouse_pos):
+                    self.stamped_surface.blit(self._type1, (mouse_pos[0] - 32, mouse_pos[1] - 32))
+                    self._towers.append((mouse_pos[0], mouse_pos[1], self._type1))
+                    self._money -= self._type1_cost
+                    self._selected_tower = None
+
+            elif self._selected_tower == self._type2 and self._money >= self._type2_cost:
+                if self.pos_valid(mouse_pos):
+                    self.stamped_surface.blit(self._type2, (mouse_pos[0] - 32, mouse_pos[1] - 32))
+                    self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
+                    self._money -= self._type2_cost
+                    self._selected_tower = None
 
 class Enemy:
     def __init__(self,image):
@@ -142,15 +142,16 @@ class MainLoop:
                 elif e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
                         if self.__tower_selection._selected_tower: # checks to see if there is a tower that has been selected
-                            self.__tower_selection.place_tower(mouse_pos,self._game_screen)  # this will run the code to then place the tower onto the game map
+                            self.__tower_selection.place_tower(mouse_pos)  # this will run the code to then place the tower onto the game map
                         else:                                                   # if not
                             self.__tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
                         self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
-                
+              
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
+            self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
