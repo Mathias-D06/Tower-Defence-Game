@@ -55,8 +55,6 @@ class TowerSelection(Tower):                            # class specific for the
         self._money = 250                                # set money to the starting number
         self._tower1_rect = None                        # sets the initial rect for the 2 towers as None
         self._tower2_rect = None
-        self._image_rect1 = self._type1.get_rect()
-        self._image_rect2 = self._type2.get_rect()
         self.stamped_surface = Surface((1288,728), SRCALPHA)
         self.stamped_surface.fill((0,0,0,0))
     
@@ -83,15 +81,15 @@ class TowerSelection(Tower):                            # class specific for the
         return True
     
     def place_tower(self, mouse_pos):
-        if self._selected_tower:
-            if self._selected_tower == self._type1 and self._money >= self._type1_cost:
-                if self.pos_valid(mouse_pos):
-                    self.stamped_surface.blit(self._type1, (mouse_pos[0] - 32, mouse_pos[1] - 32))
-                    self._towers.append((mouse_pos[0], mouse_pos[1], self._type1))
-                    self._money -= self._type1_cost
-                    self._selected_tower = None
+        if self._selected_tower:                                     # checks to see if there is a tower that has been selected
+            if self._selected_tower == self._type1 and self._money >= self._type1_cost:   # checks to see if it is the first tower and that the player has enough money
+                if self.pos_valid(mouse_pos):                       # checks to see if the current position is valid
+                    self.stamped_surface.blit(self._type1, (mouse_pos[0] - 32, mouse_pos[1] - 32))    # blits the current tower to the transparent surface using the mouse positions
+                    self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
+                    self._money -= self._type1_cost   # deducts the cost
+                    self._selected_tower = None    # sets it back to none
 
-            elif self._selected_tower == self._type2 and self._money >= self._type2_cost:
+            elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
                 if self.pos_valid(mouse_pos):
                     self.stamped_surface.blit(self._type2, (mouse_pos[0] - 32, mouse_pos[1] - 32))
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
