@@ -4,11 +4,12 @@ init()
 display.set_caption('Frontlines')
 font.init()
 clock = time.Clock()
+import random
 
 class Tower:                              # creates the tower class
     def __init__(self):
         self.__range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
-        self.__damage = 20
+        self._damage = 20
         self.__target = None     # initialy the targeted enemy is set to none as it will be changed when an enemy is near
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
@@ -22,7 +23,7 @@ class Tower:                              # creates the tower class
         self._image_width = self._type1.get_width()
         centre_x = self._tower.pos[0] + self._image_height//2          # to calculate the the centre of the images we take the bottom left corner co-ordinates and add in the height and width
         centre_y = self._tower.pos[1] + self._image_width//2
-        enemy_centre_x = self._enemy.x + self._enemy.image.get_height()//2        # do the same for the enemy centre
+        enemy_centre_x = self._enemy.x + self._enemy.image.get_height()//2        # do the same for the enemy centre (these aren't finished)
         enemy_centre_y = self._enemy.y + self._enemy.image.get_width()//2
         distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)       # using triganometry to calucate the distance between the enemy and tower
         return distance <= self.__range
@@ -30,14 +31,14 @@ class Tower:                              # creates the tower class
     def attack(self,enemy,inRange):                       # using the inRange() fucntion attack the nearest tower 
         self._willhit = inRange(self,target,enemy[target])
         if self.__target and self._willhit:                                 # if an enemy has been found and it's in range then deal damage
-            self.__target.take_damage(self.__damage)
+            self.__target.take_damage(self._damage)
             if self.__target.health <= 0:                            # if an enemy is killed then set the target back to 0
                 self.__target = None
         else:
             self.__new_target = newTarget(self,enemies)
             if self.__new_target is not None:                                       # when there is no target set the target to the new one
                 self.__target = self.__new_target
-                self.__target = self._take_damage(self.__damage)                     # that target will then take damage
+                self.__target = self._take_damage(self._damage)                     # that target will then take damage
             else:
                 self.__target = None
     
@@ -55,8 +56,8 @@ class TowerSelection(Tower):                            # class specific for the
         self._money = 250                                # set money to the starting number
         self._tower1_rect = None                        # sets the initial rect for the 2 towers as None
         self._tower2_rect = None
-        self.stamped_surface = Surface((1288,728), SRCALPHA)
-        self.stamped_surface.fill((0,0,0,0))
+        self.stamped_surface = Surface((1288,728), SRCALPHA)   # creates a transparent surface and adds a transparent feature to it
+        self.stamped_surface.fill((0,0,0,0))       # fills it with transparency
     
     def select_tower(self, mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
@@ -86,8 +87,8 @@ class TowerSelection(Tower):                            # class specific for the
                 if self.pos_valid(mouse_pos):                       # checks to see if the current position is valid
                     self.stamped_surface.blit(self._type1, (mouse_pos[0] - 32, mouse_pos[1] - 32))    # blits the current tower to the transparent surface using the mouse positions
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
-                    self._money -= self._type1_cost   # deducts the cost
-                    self._selected_tower = None    # sets it back to none
+                    self._money -= self._type1_cost                                 # deducts the cost
+                    self._selected_tower = None                                    # sets it back to none
 
             elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
                 if self.pos_valid(mouse_pos):
@@ -96,14 +97,43 @@ class TowerSelection(Tower):                            # class specific for the
                     self._money -= self._type2_cost
                     self._selected_tower = None
 
-class Enemy:
-    def __init__(self,image):
+class Enemy(TowerSelection):
+    def __init__(self,random_x,random_y):
+        TowerSelection.__init__(self)
         self._image = image.load("towerDefense_tile248.png")         # the sprite of the enemies are pre set like the tower images
         self._health = 40                                           # the health is set to be a constant
         self._number = 4                                             # the number and speed are to be vaiable as they will change as the round goes on
-        self._speed = 6
-        self._pos = []                                              # the positions of the enemies will be stored in an array
-        self._round = 1                                          # currently a place holder for the round variable
+        self._speed = 6                                           # the enemy speed is set to 0 
+        self._pos = [random_x,random_y]                        # the positions of the enemies will be stored in an array 
+        
+    
+    def take_damage(self):
+        self._health -= self._damage
+        return self._health <= 0
+
+    def movement(self):
+        pass
+
+class EnemyGroup(Enemy):    
+    def __init__(self):
+        Enemy.__init__(self)
+        self._round = 1                                          # sets the number of rounds to 1
+        self._enemies = []
+    
+    def spawn_enemy(self):
+        self.__num_enemies = self._number + self._round
+        for _ in range(self.__num_enemies):
+            random_x = random.randint(379,409)             # the height used is set to a random int near the start if the path and same for the width 
+            random_y = random.randint(0,10)
+            enemy = Enemy(random_x,random_y)
+            self._enemies.append(enemy)
+    
+    def updateEnemies(self):
+        self._enemies = [enemy for enemy in self._enemies if enemy.health > 0]
+        for enemy in self._enemies:
+            enemy.move()
+            self.stamped_surface.blit(enemy.image,self._pos)
+
 
 class MainLoop:
     def __init__(self):
@@ -118,7 +148,8 @@ class MainLoop:
         self.__tower1_rect = Rect(450,600,64,64)                    # this is the outline for the towers in the tower selection box
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
-        self.__tower_selection._tower2_rect = self.__tower2_rect    
+        self.__tower_selection._tower2_rect = self.__tower2_rect
+        self.__enemy = Enemy(random,random)    
 
     def drawTowerbox(self):
         draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
@@ -150,6 +181,7 @@ class MainLoop:
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
+            self._game_screen.blit(self.__enemy.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
