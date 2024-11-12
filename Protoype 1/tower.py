@@ -59,18 +59,18 @@ class TowerSelection(Tower):                            # class specific for the
     def select_tower(self, mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
                   self._selected_tower = self._type1                                    # set it to type 1
-              elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  # checks to see if there is a selected tower
+              elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  
                   self._selected_tower = self._type2
     
     def drawTower_preview(self, game_screen, mouse_pos):
-        if self._selected_tower:
-            self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)
-            if (mouse_pos[0] >= 32 and mouse_pos[0] <= (1288 - 32) and mouse_pos[1] >= 32 and mouse_pos[1] <= (728 -32)):
+        if self._selected_tower:                                                    # checks to see if there is a selected tower
+            self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)    # creates a rect around the preview tower
+            if (mouse_pos[0] >= 32 and mouse_pos[0] <= (1288 - 32) and mouse_pos[1] >= 32 and mouse_pos[1] <= (728 -32)):  # checks if the mouse pos is near the boundary of the screen
                 game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  # if so then use the mouse position to blit an image of the tower to screen
     
     def pos_valid(self,mouse_pos):
         self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)   # creates a rect for the preview tower using the mouse position
-        if (mouse_pos[0] < 32 or mouse_pos[0] > 1288 or mouse_pos[1] < 32 or mouse_pos[1] > 728):
+        if (mouse_pos[0] < 32 or mouse_pos[0] > 1288 or mouse_pos[1] < 32 or mouse_pos[1] > 728): # checks if the mouse pos is near the boundary of the screen
             return False
         for tower in self._towers:                                          # iterates through the towers array 
             self._currentRect = Rect(tower[0] - 32, tower[1] - 32, 64, 64)       # sets a rect around each existing tower using each of the tower index
