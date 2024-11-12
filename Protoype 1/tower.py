@@ -67,29 +67,30 @@ class TowerSelection(Tower):                            # class specific for the
     def pos_valid(self,mouse_pos):
         self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)   # creates a rect for the preview tower using the mouse position
         for tower in self._towers:                                          # iterates through the towers array 
-            currentRect = Rect(tower[0] - 32, tower[1] - 32, 64, 64)       # sets a rect around each existing tower using each of the tower index
-            if self._previewRect.colliderect(currentRect):                      # checks to see if there is a collision
+            self._currentRect = Rect(tower[0] - 32, tower[1] - 32, 64, 64)       # sets a rect around each existing tower using each of the tower index
+            if self._previewRect.colliderect(self._currentRect):                      # checks to see if there is a collision
                 return False
         return True
     
     def place_tower(self,mouse_pos,game_screen):
         for e in event.get():    
-            if self._selected_tower == self._type1:                        # if the first tower will be set as type 1
-                if self._money >= self._type1_cost:                         # checks if the player has enough money
-                    if self.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
-                        if e.button == 1: 
-                            game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
-                            self._towers.append((mouse_pos[0], mouse_pos[1], self._type1))
-                            self._money -= self._type1_cost                      #  it will then take the cost away from the money owned
-                            self._selected_tower = None                            # it will reset the selected tower back to none
+            if e.type == MOUSEBUTTONDOWN:        
+                if self._selected_tower == self._type1:                        # if the first tower will be set as type 1
+                    if self._money >= self._type1_cost:                         # checks if the player has enough money
+                        if self.pos_valid(mouse_pos) == True:                  # it will use the validation function to check the position that is selected by the user
+                            if e.button == 1: 
+                                game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
+                                self._towers.append((mouse_pos[0], mouse_pos[1], self._type1))
+                                self._money -= self._type1_cost                      #  it will then take the cost away from the money owned
+                                self._selected_tower = None                            # it will reset the selected tower back to none
             elif self._selected_tower == self._type2:                           # this block of code is repeated for the second type of tower
                 if self._money >= self._type2_cost:                           
                     if self.pos_valid(mouse_pos) == True:            
-                        if e.button == 1:
-                            game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
-                            self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
-                            self._money -= self._type2_cost
-                            self._selected_tower = None
+                            if e.button == 1:
+                                game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))
+                                self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
+                                self._money -= self._type2_cost
+                                self._selected_tower = None
 
 class Enemy:
     def __init__(self,image):
