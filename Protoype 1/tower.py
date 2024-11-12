@@ -97,9 +97,8 @@ class TowerSelection(Tower):                            # class specific for the
                     self._money -= self._type2_cost
                     self._selected_tower = None
 
-class Enemy(TowerSelection):
+class Enemy:
     def __init__(self,random_x,random_y):
-        TowerSelection.__init__(self)
         self._image = image.load("towerDefense_tile248.png")         # the sprite of the enemies are pre set like the tower images
         self._health = 40                                           # the health is set to be a constant
         self._number = 4                                             # the number and speed are to be vaiable as they will change as the round goes on
@@ -129,10 +128,10 @@ class EnemyGroup(Enemy):
             self._enemies.append(enemy)
     
     def updateEnemies(self):
-        self._enemies = [enemy for enemy in self._enemies if enemy.health > 0]
+        self._enemies = [enemy for enemy in self._enemies if enemy._health > 0]
         for enemy in self._enemies:
             enemy.move()
-            self.stamped_surface.blit(enemy.image,self._pos)
+            self.stamped_surface.blit(enemy._image, enemy._pos)
 
 
 class MainLoop:
@@ -149,7 +148,7 @@ class MainLoop:
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
         self.__tower_selection._tower2_rect = self.__tower2_rect
-        self.__enemy = Enemy(random,random)    
+        self.__enemyGroup = EnemyGroup()    
 
     def drawTowerbox(self):
         draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
@@ -183,6 +182,7 @@ class MainLoop:
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self._game_screen.blit(self.__enemy.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
+            self.__enemyGroup.updateEnemies()
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
