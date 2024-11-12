@@ -6,7 +6,7 @@ font.init()
 clock = time.Clock()
 import random
 
-class Tower:                              # creates the tower class
+class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage = 20
@@ -106,7 +106,7 @@ class EnemyGroup:
         self._enemies = []
         self._number = 4            # the positions of the enemies will be stored in an array
     
-    def take_damage(self,damage):
+    def take_damage(self,damage):       # the take
         self._health -= damage
         return self._health <= 0
     
