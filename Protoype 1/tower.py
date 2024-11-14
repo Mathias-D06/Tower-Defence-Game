@@ -9,7 +9,8 @@ import random
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
-        self._damage = 20
+        self._damage1 = 20
+        self._damage2 = 45
         self.__target = None     # initialy the targeted enemy is set to none as it will be changed when an enemy is near
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
@@ -106,19 +107,19 @@ class EnemyGroup:
         self._enemies = []
         self._number = 4            # the positions of the enemies will be stored in an array
     
-    def take_damage(self,damage):       # the take
-        self._health -= damage
-        return self._health <= 0
+    def take_damage(self,damage):       
+        self._health -= damage          # will reduce the health by the damage inflicted
+        return self._health <= 0        # returns whether the enemy is alive or not
     
-    def movement(self):
+    def movement(self):                # currently just a placeholder for the movement
         pass
     
     def spawn_enemy(self):
-        self.__numEnemies = self._number + self._round
-        self._health += self._round
-        for _ in range(self.__numEnemies):
+        self.__numEnemies = self._number + self._round      # increases the number of enemies each round
+        self._health += self._round                     # same for the health 
+        for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
-            random_y = random.randint(379,409)
+            random_y = random.randint(379,409)          
             self._pos = [random_x,random_y]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._pos)
     
