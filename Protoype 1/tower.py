@@ -103,7 +103,7 @@ class EnemyGroup:
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 1                                          # sets the number of rounds to 1
-        self._speed = 6                                         # the enemy speed is set to 6
+        self._speed = 0                                         # the enemy speed is set to 6
         self._enemies = []
         self._number = 4            # the positions of the enemies will be stored in an array
     
@@ -111,7 +111,7 @@ class EnemyGroup:
         self._health -= damage          # will reduce the health by the damage inflicted
         return self._health <= 0        # returns whether the enemy is alive or not
     
-    def movement(self):                # currently just a placeholder for the movement
+    def movement(self):                # currently just a placeholder for the movement function
         pass
     
     def spawn_enemy(self):
@@ -121,7 +121,7 @@ class EnemyGroup:
             random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
             random_y = random.randint(379,409)          
             self._pos = [random_x,random_y]             # the positions of the enemies will be stored in an array
-            self._enemies.append(self._pos)
+            self._enemies.append(self._pos)             # the position of the enemies will be stored in a list
     
     def updateEnemies(self,game_screen):
         alive_enemies = []                    # this is the array that only holds the alive enemies, it holds the x and y positions of the enemies
@@ -132,7 +132,15 @@ class EnemyGroup:
         for self._pos in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
             game_screen.blit(self._image,self._pos)       # updates the screen removing "dead" enemies
-            
+    def movement(self):
+        for _ in self._enemies:
+            if self._pos[0] <= 1250 and self._pos[1] <= 664:
+                self._speed = random.uniform(0.5,2)
+                self._pos[0] += self._speed
+            else:
+                self._speed = 0
+
+        
 class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
