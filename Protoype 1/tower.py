@@ -134,8 +134,13 @@ class EnemyGroup:
             game_screen.blit(self._image,self._pos)       # updates the screen removing "dead" enemies
     def movement(self):
         for _ in self._enemies:
-            if self._pos[0] <= 1250 and self._pos[1] <= 664:
+            if self._pos[0] <= 385 and self._pos[0]>=0:
                 self._speed = random.uniform(0.5,2)
+                self._pos[0] += self._speed
+            elif self._pos[1] >= 280 and self._pos[1] < 440:
+                self._speed = random.uniform(0.5,2)
+                self._pos[1] -= self._speed 
+            elif self._pos[0] <=386 and self._pos[0] <= 880:
                 self._pos[0] += self._speed
             else:
                 self._speed = 0
