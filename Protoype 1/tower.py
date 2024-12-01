@@ -132,7 +132,7 @@ class EnemyGroup:
     
     def movement(self):
         for _ in self._enemies:
-            if self._enemy[0] < 385 and self._enemy[0]>=0:
+            if self._enemy[0] < 385:
                 self._speed = random.uniform(0.5,2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 440 and self._enemy[1] > 280:
