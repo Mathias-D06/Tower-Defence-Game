@@ -145,8 +145,6 @@ class EnemyGroup:
                 self._enemy[1] += self._speed 
             elif self._enemy[0] < 1250 and self._enemy[1] > 871:
                 self._enemy[0] += self._speed
-            else:
-                self._speed = 0
         
 class MainLoop:
     def __init__(self):
