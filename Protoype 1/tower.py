@@ -104,8 +104,8 @@ class EnemyGroup:
         self._health = 40                                   # the health is set to be a constant
         self._round = 1                                          # sets the number of rounds to 1
         self._speed = 0                                         # the enemy speed is set to 6
-        self._enemies = []
-        self._number = 4            # the positions of the enemies will be stored in an array
+        self._enemies = []                  # the enemy list is initialised
+        self._number = 4            
     
     def take_damage(self,damage):       
         self._health -= damage          # will reduce the health by the damage inflicted
@@ -117,34 +117,34 @@ class EnemyGroup:
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
             random_y = random.randint(379,409)          
-            self._pos = [random_x,random_y]             # the positions of the enemies will be stored in an array
-            self._enemies.append(self._pos)             # the position of the enemies will be stored in a list
+            self._enemy = [random_x,random_y,self._health]             # the positions of the enemies will be stored in an array
+            self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
     def updateEnemies(self,game_screen):
-        alive_enemies = []                    # this is the array that only holds the alive enemies, it holds the x and y positions of the enemies
-        for self._pos in self._enemies:             # iterates though the original list
+        alive_enemies = []                    # this is the list that only holds the alive enemies, it holds the x and y positions of the enemies
+        for self._enemy in self._enemies:             # iterates though the original list
             if self._health > 0:                   # checks the enemies that are alive 
-                alive_enemies.append(self._pos)       # adds it to the list
+                alive_enemies.append(self._enemy)       # adds it to the list
         self._enemies = alive_enemies          # it then updates the older list
-        for self._pos in self._enemies:                 # iterates through the current enemies
+        for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
-            game_screen.blit(self._image,self._pos)       # updates the screen removing "dead" enemies
+            game_screen.blit(self._image,(self._enemy[0],self._enemy[1]))       # updates the screen removing "dead" enemies
     
     def movement(self):
         for _ in self._enemies:
-            if self._pos[0] < 385 and self._pos[0]>=0:
+            if self._enemy[0] < 385 and self._enemy[0]>=0:
                 self._speed = random.uniform(0.5,2)
-                self._pos[0] += self._speed
-            elif self._pos[1] < 440 and self._pos[1] > 280:
+                self._enemy[0] += self._speed
+            elif self._enemy[1] < 440 and self._enemy[1] > 280:
                 self._speed = random.uniform(0.5,2)
-                self._pos[1] -= self._speed 
-            elif self._pos[0] <386 and self._pos[0] < 870:
-                self._pos[0] += self._speed
-            elif self._pos[1] < 440 and self._pos[1] > 280:
+                self._enemy[1] -= self._speed 
+            elif self._enemy[0] <386 and self._enemy[0] < 870:
+                self._enemy[0] += self._speed
+            elif self._enemy[1] < 440 and self._enemy[1] > 280:
                 self._speed = random.uniform(0.5,2)
-                self._pos[1] += self._speed 
-            elif self._pos[0] < 1250 and self._pos[1] > 871:
-                self._pos[0] += self._speed
+                self._enemy[1] += self._speed 
+            elif self._enemy[0] < 1250 and self._enemy[1] > 871:
+                self._enemy[0] += self._speed
             else:
                 self._speed = 0
         
@@ -185,7 +185,6 @@ class MainLoop:
                     if e.button == 1:
                         if self.__tower_selection._selected_tower: # checks to see if there is a tower that has been selected
                             self.__tower_selection.place_tower(mouse_pos)  # this will run the code to then place the tower onto the game map
-                            print("mouse button clicked")
                         else:                                                   # if not
                             self.__tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
