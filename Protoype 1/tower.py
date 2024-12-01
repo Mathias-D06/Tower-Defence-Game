@@ -111,9 +111,6 @@ class EnemyGroup:
         self._health -= damage          # will reduce the health by the damage inflicted
         return self._health <= 0        # returns whether the enemy is alive or not
     
-    def movement(self):                # currently just a placeholder for the movement function
-        pass
-    
     def spawn_enemy(self):
         self.__numEnemies = self._number + self._round      # increases the number of enemies each round
         self._health += self._round                     # same for the health 
@@ -132,20 +129,21 @@ class EnemyGroup:
         for self._pos in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
             game_screen.blit(self._image,self._pos)       # updates the screen removing "dead" enemies
+    
     def movement(self):
         for _ in self._enemies:
-            if self._pos[0] < 20 and self._pos[0]>=0:
+            if self._pos[0] < 385 and self._pos[0]>=0:
                 self._speed = random.uniform(0.5,2)
                 self._pos[0] += self._speed
-            elif self._pos[1] < 724 and self._pos[1] > 28:
+            elif self._pos[1] < 440 and self._pos[1] > 280:
                 self._speed = random.uniform(0.5,2)
                 self._pos[1] -= self._speed 
-            elif self._pos[0] <123 and self._pos[0] < 345:
+            elif self._pos[0] <386 and self._pos[0] < 870:
                 self._pos[0] += self._speed
-            elif self._pos[1] < 725 and self._pos[1] > 280:
+            elif self._pos[1] < 440 and self._pos[1] > 280:
                 self._speed = random.uniform(0.5,2)
                 self._pos[1] += self._speed 
-            elif self._pos[0] < 124 and self._pos[1] > 346:
+            elif self._pos[0] < 1250 and self._pos[1] > 871:
                 self._pos[0] += self._speed
             else:
                 self._speed = 0
@@ -187,6 +185,7 @@ class MainLoop:
                     if e.button == 1:
                         if self.__tower_selection._selected_tower: # checks to see if there is a tower that has been selected
                             self.__tower_selection.place_tower(mouse_pos)  # this will run the code to then place the tower onto the game map
+                            print("mouse button clicked")
                         else:                                                   # if not
                             self.__tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
                 elif e.type == KEYDOWN:
