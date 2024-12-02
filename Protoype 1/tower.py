@@ -11,7 +11,6 @@ class Tower():                              # creates the tower class
         self.__range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 20
         self._damage2 = 45
-        self.__target = None     # initialy the targeted enemy is set to none as it will be changed when an enemy is near
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
         self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
@@ -19,36 +18,33 @@ class Tower():                              # creates the tower class
         self._type2_cost = 150
         self._towers = []
     
-    def inRange(self):
-        self._image_height = self._type1.get_height()
-        self._image_width = self._type1.get_width()
-        centre_x = self._tower.pos[0] + self._image_height//2          # to calculate the the centre of the images we take the bottom left corner co-ordinates and add in the height and width
-        centre_y = self._tower.pos[1] + self._image_width//2
-        enemy_centre_x = self._enemy.x + self._enemy.image.get_height()//2        # do the same for the enemy centre (these aren't finished)
-        enemy_centre_y = self._enemy.y + self._enemy.image.get_width()//2
-        distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)       # using triganometry to calucate the distance between the enemy and tower
+    def inRange(self, tower, enemy):
+        centre_x = tower[0] + self._type1.get_width() // 2
+        centre_y = tower[1] + self._type1.get_height() // 2
+        enemy_centre_x = enemy[0] + self._type1.get_width() // 2
+        enemy_centre_y = enemy[1] + self._type1.get_height() // 2
+        distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)
         return distance <= self.__range
     
-    def attack(self,enemy,inRange):                       # using the inRange() fucntion attack the nearest tower 
-        self._willhit = inRange(self,target,enemy[target])
-        if self.__target and self._willhit:                                 # if an enemy has been found and it's in range then deal damage
-            self.__target.take_damage(self._damage)
-            if self.__target.health <= 0:                            # if an enemy is killed then set the target back to 0
-                self.__target = None
-        else:
-            self.__new_target = newTarget(self,enemies)
-            if self.__new_target is not None:                                       # when there is no target set the target to the new one
-                self.__target = self.__new_target
-                self.__target = self._take_damage(self._damage)                     # that target will then take damage
-            else:
-                self.__target = None
+    def attack(self, enemies):
+        for tower in self._towers:
+            for enemy in enemies:
+                if self.inRange(tower, enemy):
+                    if tower[2] == self._type1:  
+                        enemy[2] -= self._damage1 
+                    elif tower[2] == self._type2: 
+                        enemy[2] -= self._damage2  
+        return [enemy for enemy in enemies if enemy[2] > 0] 
     
-    def newTarget(self):                                                    # a function to assign a new enemy as the target
-        self.__area = inRange(self,enemy)
-        for enemy in enemies:                                           # by checking a valid enemy within the group of enemies it will return the nearest enemy 
-            if self.__area:
-                return enemy
-        return None
+    def newTarget(self, enemies):
+        for tower in self._towers:
+            for enemy in enemies:
+                if self.inRange(tower, enemy): 
+                    if tower[2] == self._type1: 
+                        return enemy 
+                    elif tower[2] == self._type2: 
+                        return enemy 
+        return None  
 
 class TowerSelection(Tower):                            # class specific for the selection of towers by the player
     def __init__(self):
@@ -112,11 +108,11 @@ class EnemyGroup:
         return self._health <= 0        # returns whether the enemy is alive or not
     
     def spawn_enemy(self):
-        self.__numEnemies = self._number + self._round      # increases the number of enemies each round
-        self._health += self._round                     # same for the health 
+        self.__numEnemies = self._number + self._round      # increases the number of enemies each round                    
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
             random_y = random.randint(379,409)          
+            self._health += self._round                         # increase the health 
             self._enemy = [random_x,random_y,self._health]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
