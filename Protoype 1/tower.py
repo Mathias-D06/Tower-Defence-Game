@@ -141,10 +141,11 @@ class EnemyGroup:
             elif self._enemy[0] >389 and self._enemy[0] < 830:
                 self._speed = random.uniform(0.5,0.75)
                 self._enemy[0] += self._speed
-            elif self._enemy[1] < 429 and self._enemy[1] > 279:
+            elif self._enemy[1] < 430 and self._enemy[1] > 280:
                 self._speed = random.uniform(0.5,0.75)
-                self._enemy[1] += self._speed 
+                self._enemy[1] += self._speed
             elif self._enemy[0] < 1250 and self._enemy[1] > 829:
+                self._speed = random.uniform(0.5,0.75)
                 self._enemy[0] += self._speed
         
 class MainLoop:
