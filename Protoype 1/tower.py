@@ -132,18 +132,19 @@ class EnemyGroup:
     
     def movement(self):
         for _ in self._enemies:
-            if self._enemy[0] < 385:
-                self._speed = random.uniform(0.5,2)
+            if self._enemy[0] < 390:
+                self._speed = random.uniform(0.5,0.75)
                 self._enemy[0] += self._speed
-            elif self._enemy[1] < 440 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.5,2)
+            elif self._enemy[1] < 430 and self._enemy[1] > 280:
+                self._speed = random.uniform(0.5,0.75)
                 self._enemy[1] -= self._speed 
-            elif self._enemy[0] <386 and self._enemy[0] < 870:
+            elif self._enemy[0] >389 and self._enemy[0] < 830:
+                self._speed = random.uniform(0.5,0.75)
                 self._enemy[0] += self._speed
-            elif self._enemy[1] < 440 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.5,2)
+            elif self._enemy[1] < 429 and self._enemy[1] > 279:
+                self._speed = random.uniform(0.5,0.75)
                 self._enemy[1] += self._speed 
-            elif self._enemy[0] < 1250 and self._enemy[1] > 871:
+            elif self._enemy[0] < 1250 and self._enemy[1] > 829:
                 self._enemy[0] += self._speed
         
 class MainLoop:
