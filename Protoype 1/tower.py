@@ -33,7 +33,7 @@ class Tower():                              # creates the tower class
             if tower not in self._cooldown_times:
                 self._cooldown_times[tower] = 0
 
-            if current_time - self._cooldown_times[tower] >= 500:
+            if current_time - self._cooldown_times[tower] >= 250:
                 for enemy in enemies:
                     if self.inRange(tower, enemy):
                         if tower[2] == self._type1:
@@ -101,10 +101,11 @@ class TowerSelection(Tower):                            # class specific for the
                     self._selected_tower = None
 
 class EnemyGroup:    
-    def __init__(self):
+    def __init__(self,tower_selection):
+        self.__tower_selection = tower_selection
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
-        self._round = 1                                          # sets the number of rounds to 1
+        self._round = 0                                          # sets the number of rounds to 1
         self._speed = 0                                         # the enemy speed is set to 6
         self._enemies = []                  # the enemy list is initialised
         self._number = 4            
@@ -128,8 +129,8 @@ class EnemyGroup:
         for self._enemy in self._enemies:             # iterates though the original list
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
-            if self._health < 0:
-                self._money += (self._enemy * 25)
+            else:
+                self.__tower_selection.money += (self._enemy[2] * 25)
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
@@ -138,19 +139,19 @@ class EnemyGroup:
     def movement(self):
         for _ in self._enemies:
             if self._enemy[0] < 390:
-                self._speed = random.uniform(0.5,0.75)
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.5,0.75)
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] -= self._speed 
             elif self._enemy[0] >389 and self._enemy[0] < 830:
-                self._speed = random.uniform(0.5,0.75)
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.5,0.75)
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] += self._speed
             elif self._enemy[0] < 1250 and self._enemy[1] > 829:
-                self._speed = random.uniform(0.5,0.75)
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
         
 class MainLoop:
@@ -167,7 +168,13 @@ class MainLoop:
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
         self.__tower_selection._tower2_rect = self.__tower2_rect
-        self.__enemyGroup = EnemyGroup()    
+        self.__enemyGroup = EnemyGroup(self.__tower_selection)    
+
+    def displayStats(self):
+        self._display_money = self.__font.render("Money:" + str(self.__tower_selection._money), True, (255,255,255))
+        self._game_screen.blit(self._display_money, (100,25))
+        self._display_round = self.__font.render("Round:" + str(self.__enemyGroup._round), True, (255,255,255))
+        self._game_screen.blit(self._display_round, (1100,25))
 
     def drawTowerbox(self):
         draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
@@ -196,8 +203,9 @@ class MainLoop:
                     if e.key == K_ESCAPE:
                         self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
             
-            if not self.__enemyGroup._enemies:
-                self.__enemyGroup.spawn_enemy() 
+            if not self.__enemyGroup._enemies:          # if there are no more enemies in the array
+                self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
+                self.__enemyGroup._round+=1
             
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
@@ -205,6 +213,7 @@ class MainLoop:
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
+            self.displayStats()
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
