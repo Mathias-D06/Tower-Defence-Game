@@ -101,8 +101,8 @@ class TowerSelection(Tower):                            # class specific for the
                     self._selected_tower = None
 
 class EnemyGroup:    
-    def __init__(self,tower_selection):
-        self.__tower_selection = tower_selection
+    def __init__(self):
+        self.__tower_selection = TowerSelection() 
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 1
@@ -129,8 +129,8 @@ class EnemyGroup:
         for self._enemy in self._enemies:             # iterates though the original list
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
-            else:
-                self.__tower_selection.money += (self._enemy[2] * 25)
+            elif self._health <= 0:
+                self.__tower_selection._money += (self._enemy[2] * 25)
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
@@ -168,7 +168,7 @@ class MainLoop:
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
         self.__tower_selection._tower2_rect = self.__tower2_rect
-        self.__enemyGroup = EnemyGroup(self.__tower_selection)    
+        self.__enemyGroup = EnemyGroup()    
 
     def displayStats(self):
         self._display_money = self.__font.render("Money:" + str(self.__tower_selection._money), True, (255,255,255))
