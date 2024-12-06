@@ -9,14 +9,15 @@ import random
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
-        self._damage1 = 20
-        self._damage2 = 45
+        self._damage1 = 40
+        self._damage2 = 65
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
         self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
         self._type1_cost = 100
         self._type2_cost = 150
         self._towers = []
+        self._cooldown_times = {}
     
     def inRange(self, tower, enemy):
         centre_x = tower[0] + self._type1.get_width() // 2
@@ -27,19 +28,27 @@ class Tower():                              # creates the tower class
         return distance <= self.__range
     
     def attack(self, enemies):
+        current_time = time.get_ticks()
         for tower in self._towers:
-            for enemy in enemies:
-                if self.inRange(tower, enemy):
-                    if tower[2] == self._type1:  
-                        enemy[2] -= self._damage1 
-                    elif tower[2] == self._type2: 
-                        enemy[2] -= self._damage2
+            if tower not in self._cooldown_times:
+                self._cooldown_times[tower] = 0
+
+            if current_time - self._cooldown_times[tower] >= 500:
+                for enemy in enemies:
+                    if self.inRange(tower, enemy):
+                        if tower[2] == self._type1:
+                            enemy[2] -= self._damage1
+                        elif tower[2] == self._type2:
+                            enemy[2] -= self._damage2
+                        self._cooldown_times[tower] = current_time
+                        break
+
         return [enemy for enemy in enemies if enemy[2] > 0] 
     
     def newTarget(self, enemies):
         for tower in self._towers:
             for enemy in enemies:
-                if self.inRange(tower, enemy):
+                if self.inRange(tower,enemy):
                     return enemy
         return None  
 
@@ -105,11 +114,12 @@ class EnemyGroup:
         return self._health <= 0        # returns whether the enemy is alive or not
     
     def spawn_enemy(self):
-        self.__numEnemies = self._number + self._round      # increases the number of enemies each round                    
+        self._number += 1
+        self.__numEnemies = self._number      # increases the number of enemies each round                    
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
             random_y = random.randint(379,409)          
-            self._health += self._round                         # increase the health 
+            self._health += (self._round * 5)                         # increase the health 
             self._enemy = [random_x,random_y,self._health]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
@@ -118,6 +128,8 @@ class EnemyGroup:
         for self._enemy in self._enemies:             # iterates though the original list
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
+            if self._health < 0:
+                self._money += (self._enemy * 25)
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
@@ -187,12 +199,12 @@ class MainLoop:
             if not self.__enemyGroup._enemies:
                 self.__enemyGroup.spawn_enemy() 
             
+            self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
-            self.__enemyGroup._enemies = self.__tower.attack(self.__enemyGroup._enemies)
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
