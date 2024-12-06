@@ -8,7 +8,7 @@ import random
 
 class Tower():                              # creates the tower class
     def __init__(self):
-        self.__range = 10                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
+        self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 20
         self._damage2 = 45
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
@@ -33,17 +33,14 @@ class Tower():                              # creates the tower class
                     if tower[2] == self._type1:  
                         enemy[2] -= self._damage1 
                     elif tower[2] == self._type2: 
-                        enemy[2] -= self._damage2  
+                        enemy[2] -= self._damage2
         return [enemy for enemy in enemies if enemy[2] > 0] 
     
     def newTarget(self, enemies):
         for tower in self._towers:
             for enemy in enemies:
-                if self.inRange(tower, enemy): 
-                    if tower[2] == self._type1: 
-                        return enemy 
-                    elif tower[2] == self._type2: 
-                        return enemy 
+                if self.inRange(tower, enemy):
+                    return enemy
         return None  
 
 class TowerSelection(Tower):                            # class specific for the selection of towers by the player
@@ -186,6 +183,7 @@ class MainLoop:
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
                         self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
+            
             if not self.__enemyGroup._enemies:
                 self.__enemyGroup.spawn_enemy() 
             
@@ -194,6 +192,7 @@ class MainLoop:
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
+            self.__enemyGroup._enemies = self.__tower.attack(self.__enemyGroup._enemies)
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
