@@ -126,15 +126,15 @@ class EnemyGroup:
     
     def updateEnemies(self,game_screen):
         alive_enemies = []                    # this is the list that only holds the alive enemies, it holds the x and y positions of the enemies
-        for self._enemy in self._enemies:             # iterates though the original list
-            if self._health > 0:                   # checks the enemies that are alive 
+        for enemy in self._enemies:             # iterates though the original list
+            if enemy[2] > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
             else:
                 self.__tower_selection._money += 25
         self._enemies = alive_enemies          # it then updates the older list
-        for self._enemy in self._enemies:                 # iterates through the current enemies
+        for enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
-            game_screen.blit(self._image,(self._enemy[0],self._enemy[1]))       # updates the screen removing "dead" enemies
+            game_screen.blit(self._image,(enemy[0],enemy[1]))       # updates the screen removing "dead" enemies
     
     def movement(self):
         for _ in self._enemies:
