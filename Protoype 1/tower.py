@@ -129,8 +129,8 @@ class EnemyGroup:
         for self._enemy in self._enemies:             # iterates though the original list
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
-            elif self._health <= 0:
-                self.__tower_selection._money += (self._enemy[2] * 25)
+            else:
+                self.__tower_selection._money += 25
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
