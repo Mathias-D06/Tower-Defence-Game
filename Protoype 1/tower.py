@@ -14,41 +14,40 @@ class Tower():                              # creates the tower class
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
         self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
-        self._type1_cost = 100
-        self._type2_cost = 150
-        self._towers = []
-        self._cooldown_times = {}
+        self._type1_cost = 100                                      # initialises the cost for the 2 towers
+        self._type2_cost = 175
+        self._towers = []                                       # initialsies the towers list
+        self._cooldown_times = {}                           # create a dictionary for the cooldown times
     
     def inRange(self, tower, enemy):
-        centre_x = tower[0] + self._type1.get_width() // 2
-        centre_y = tower[1] + self._type1.get_height() // 2
-        enemy_centre_x = enemy[0] + self._type1.get_width() // 2
+        centre_x = tower[0] + self._type1.get_width() // 2              # check for the centre of the tower image x co-ordinate
+        centre_y = tower[1] + self._type1.get_height() // 2         # same for the y
+        enemy_centre_x = enemy[0] + self._type1.get_width() // 2        # repeat for the enemy
         enemy_centre_y = enemy[1] + self._type1.get_height() // 2
-        distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)
-        return distance <= self.__range
+        distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)   # find the distance using trig
+        return distance <= self.__range                             # return true or false depending on the distance
     
     def attack(self, enemies):
-        current_time = time.get_ticks()
+        current_time = time.get_ticks()                         # get the current time in milliseconds
         for tower in self._towers:
-            if tower not in self._cooldown_times:
-                self._cooldown_times[tower] = 0
-
-            if current_time - self._cooldown_times[tower] >= 250:
+            if tower not in self._cooldown_times:           # ensures that all towers have a cooldown timer, is needed for new towers
+                self._cooldown_times[tower] = 0                 # sets it to 0
+            if current_time - self._cooldown_times[tower] >= 250:       # subtracts the cooldown timer to see if 2.5 seconds has passed
                 for enemy in enemies:
-                    if self.inRange(tower, enemy):
-                        if tower[2] == self._type1:
-                            enemy[2] -= self._damage1
-                        elif tower[2] == self._type2:
+                    if self.inRange(tower, enemy):          # calls the inrange function
+                        if tower[2] == self._type1:             # checks the type of tower in the array to see if it the first type 
+                            enemy[2] -= self._damage1          # subtracts the enemy health from the damage
+                        elif tower[2] == self._type2:              # the same but for the other tower type
                             enemy[2] -= self._damage2
-                        self._cooldown_times[tower] = current_time
+                        self._cooldown_times[tower] = current_time  # resets the cooldown by setting it to the current time
                         break
 
-        return [enemy for enemy in enemies if enemy[2] > 0] 
+        return [enemy for enemy in enemies if enemy[2] > 0]        # returns all the alive enemies 
     
     def newTarget(self, enemies):
-        for tower in self._towers:
-            for enemy in enemies:
-                if self.inRange(tower,enemy):
+        for tower in self._towers:              # iterates through the list
+            for enemy in enemies:                   # also iterates through the enemies
+                if self.inRange(tower,enemy):           # checks the in range function to assign a new target
                     return enemy
         return None  
 
@@ -102,7 +101,7 @@ class TowerSelection(Tower):                            # class specific for the
 
 class EnemyGroup:    
     def __init__(self):
-        self.__tower_selection = TowerSelection() 
+        self._tower_selection = TowerSelection() 
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 1
@@ -130,7 +129,7 @@ class EnemyGroup:
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
             else:
-                self.__tower_selection._money += 25   # add 25 to the total money after each kill
+                self._tower_selection._money += 25   # add 25 to the total money after each kill
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
