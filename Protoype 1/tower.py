@@ -8,14 +8,14 @@ import random
 
 class Tower():                              # creates the tower class
     def __init__(self):
-        self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
+        self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 40
         self._damage2 = 65
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
         self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
-        self._type2_cost = 175
+        self._type2_cost = 200
         self._towers = []                                       # initialsies the towers list
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
     
@@ -101,7 +101,7 @@ class TowerSelection(Tower):                            # class specific for the
 
 class EnemyGroup:    
     def __init__(self):
-        self._tower_selection = TowerSelection() 
+        self.__tower_selection = TowerSelection() 
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 1
@@ -129,7 +129,7 @@ class EnemyGroup:
             if self._health > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
             else:
-                self._tower_selection._money += 25   # add 25 to the total money after each kill
+                self.__tower_selection._money += 25   # add 25 to the total money after each kill
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
@@ -137,20 +137,16 @@ class EnemyGroup:
     
     def movement(self):
         for _ in self._enemies:
+            self._speed = 0.3
             if self._enemy[0] < 390:
-                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] -= self._speed 
             elif self._enemy[0] >389 and self._enemy[0] < 830:
-                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] += self._speed
             elif self._enemy[0] < 1250 and self._enemy[1] > 829:
-                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
         
 class MainLoop:
