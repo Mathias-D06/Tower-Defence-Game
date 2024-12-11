@@ -8,18 +8,19 @@ import random
 
 class Tower():                              # creates the tower class
     def __init__(self):
-        self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
+        self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 40
         self._damage2 = 65
         self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("towerDefense_tile250.png")
         self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
-        self._type2_cost = 200
+        self._type2_cost = 175
         self._towers = []                                       # initialsies the towers list
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
+        self._money = 250                                # set money to the starting number
     
-    def inRange(self, tower, enemy):
+    def inRange(self,tower,enemy):
         centre_x = tower[0] + self._type1.get_width() // 2              # check for the centre of the tower image x co-ordinate
         centre_y = tower[1] + self._type1.get_height() // 2         # same for the y
         enemy_centre_x = enemy[0] + self._type1.get_width() // 2        # repeat for the enemy
@@ -27,7 +28,7 @@ class Tower():                              # creates the tower class
         distance = math.sqrt((centre_x - enemy_centre_x)**2 + (centre_y - enemy_centre_y)**2)   # find the distance using trig
         return distance <= self.__range                             # return true or false depending on the distance
     
-    def attack(self, enemies):
+    def attack(self,enemies):
         current_time = time.get_ticks()                         # get the current time in milliseconds
         for tower in self._towers:
             if tower not in self._cooldown_times:           # ensures that all towers have a cooldown timer, is needed for new towers
@@ -41,10 +42,13 @@ class Tower():                              # creates the tower class
                             enemy[2] -= self._damage2
                         self._cooldown_times[tower] = current_time  # resets the cooldown by setting it to the current time
                         break
-
+        for enemy in enemies:
+            if enemy[2] <= 0:
+                self._money += 15
+        
         return [enemy for enemy in enemies if enemy[2] > 0]        # returns all the alive enemies 
     
-    def newTarget(self, enemies):
+    def newTarget(self,enemies):
         for tower in self._towers:              # iterates through the list
             for enemy in enemies:                   # also iterates through the enemies
                 if self.inRange(tower,enemy):           # checks the in range function to assign a new target
@@ -55,19 +59,18 @@ class TowerSelection(Tower):                            # class specific for the
     def __init__(self):
         Tower.__init__(self)                             # makes sure that all attributes are inherited correctly
         self._selected_tower = None                        # set the tower used as none initially
-        self._money = 250                                # set money to the starting number
         self._tower1_rect = None                        # sets the initial rect for the 2 towers as None
         self._tower2_rect = None
         self.stamped_surface = Surface((1288,728), SRCALPHA)   # creates a transparent surface and adds a transparent feature to it
         self.stamped_surface.fill((0,0,0,0))       # fills it with transparency
     
-    def select_tower(self, mouse_pos):
+    def select_tower(self,mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
                   self._selected_tower = self._type1                                    # set it to type 1
               elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  
                   self._selected_tower = self._type2
     
-    def drawTower_preview(self, game_screen, mouse_pos):
+    def drawTower_preview(self,game_screen,mouse_pos):
         if self._selected_tower:                                                    # checks to see if there is a selected tower
             self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)    # creates a rect around the preview tower
             if (mouse_pos[0] >= 32 and mouse_pos[0] <= (1288 - 32) and mouse_pos[1] >= 32 and mouse_pos[1] <= (728 -32)):  # checks if the mouse pos is near the boundary of the screen
@@ -83,7 +86,7 @@ class TowerSelection(Tower):                            # class specific for the
                 return False
         return True
     
-    def place_tower(self, mouse_pos):
+    def place_tower(self,mouse_pos):
         if self._selected_tower:                                     # checks to see if there is a tower that has been selected
             if self._selected_tower == self._type1 and self._money >= self._type1_cost:   # checks to see if it is the first tower and that the player has enough money
                 if self.pos_valid(mouse_pos):                       # checks to see if the current position is valid
@@ -101,7 +104,6 @@ class TowerSelection(Tower):                            # class specific for the
 
 class EnemyGroup:    
     def __init__(self):
-        self.__tower_selection = TowerSelection() 
         self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 1
@@ -126,10 +128,8 @@ class EnemyGroup:
     def updateEnemies(self,game_screen):
         alive_enemies = []                    # this is the list that only holds the alive enemies, it holds the x and y positions of the enemies
         for self._enemy in self._enemies:             # iterates though the original list
-            if self._health > 0:                   # checks the enemies that are alive 
+            if self._enemy[2] > 0:                   # checks the enemies that are alive 
                 alive_enemies.append(self._enemy)       # adds it to the list
-            else:
-                self.__tower_selection._money += 25   # add 25 to the total money after each kill
         self._enemies = alive_enemies          # it then updates the older list
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
@@ -137,16 +137,20 @@ class EnemyGroup:
     
     def movement(self):
         for _ in self._enemies:
-            self._speed = 0.3
             if self._enemy[0] < 390:
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] -= self._speed 
             elif self._enemy[0] >389 and self._enemy[0] < 830:
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
             elif self._enemy[1] < 430 and self._enemy[1] > 280:
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[1] += self._speed
             elif self._enemy[0] < 1250 and self._enemy[1] > 829:
+                self._speed = random.uniform(0.1,0.2)
                 self._enemy[0] += self._speed
         
 class MainLoop:
