@@ -42,9 +42,9 @@ class Tower():                              # creates the tower class
                             enemy[2] -= self._damage2
                         self._cooldown_times[tower] = current_time  # resets the cooldown by setting it to the current time
                         break
-        for enemy in enemies:
-            if enemy[2] <= 0:
-                self._money += 15
+        for enemy in enemies:                                       # it will loop through the enemies
+            if enemy[2] <= 0:                                           # if the enemy health is 0 or less
+                self._money += 15                                       # add 15 for each dead enemy
         
         return [enemy for enemy in enemies if enemy[2] > 0]        # returns all the alive enemies 
     
@@ -63,6 +63,7 @@ class TowerSelection(Tower):                            # class specific for the
         self._tower2_rect = None
         self.stamped_surface = Surface((1288,728), SRCALPHA)   # creates a transparent surface and adds a transparent feature to it
         self.stamped_surface.fill((0,0,0,0))       # fills it with transparency
+        self._enemies = []
     
     def select_tower(self,mouse_pos):
               if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
@@ -76,7 +77,7 @@ class TowerSelection(Tower):                            # class specific for the
             if (mouse_pos[0] >= 32 and mouse_pos[0] <= (1288 - 32) and mouse_pos[1] >= 32 and mouse_pos[1] <= (728 -32)):  # checks if the mouse pos is near the boundary of the screen
                 game_screen.blit(self._selected_tower,(mouse_pos[0] - 32, mouse_pos[1] - 32))  # if so then use the mouse position to blit an image of the tower to screen
     
-    def pos_valid(self,mouse_pos):
+    def pos_valid(self,mouse_pos,enemies):
         self._previewRect = Rect(mouse_pos[0] - 32, mouse_pos[1] - 32, 64, 64)   # creates a rect for the preview tower using the mouse position
         if (mouse_pos[0] < 32 or mouse_pos[0] > 1288 or mouse_pos[1] < 32 or mouse_pos[1] > 728): # checks if the mouse pos is near the boundary of the screen
             return False
@@ -84,19 +85,23 @@ class TowerSelection(Tower):                            # class specific for the
             self._currentRect = Rect(tower[0] - 32, tower[1] - 32, 64, 64)       # sets a rect around each existing tower using each of the tower index
             if self._previewRect.colliderect(self._currentRect):                      # checks to see if there is a collision
                 return False
+        for enemy in enemies:
+            self._currentRect = Rect(enemy[0] - 32, enemy[1] - 32, 64, 64)
+            if self._previewRect.colliderect(self._currentRect):
+                return False 
         return True
     
     def place_tower(self,mouse_pos):
         if self._selected_tower:                                     # checks to see if there is a tower that has been selected
             if self._selected_tower == self._type1 and self._money >= self._type1_cost:   # checks to see if it is the first tower and that the player has enough money
-                if self.pos_valid(mouse_pos):                       # checks to see if the current position is valid
+                if self.pos_valid(mouse_pos, self._enemies):                       # checks to see if the current position is valid
                     self.stamped_surface.blit(self._type1, (mouse_pos[0] - 32, mouse_pos[1] - 32))    # blits the current tower to the transparent surface using the mouse positions
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
                     self._money -= self._type1_cost                                 # deducts the cost
                     self._selected_tower = None                                    # sets it back to none
 
             elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
-                if self.pos_valid(mouse_pos):
+                if self.pos_valid(mouse_pos, self._enemies):
                     self.stamped_surface.blit(self._type2, (mouse_pos[0] - 32, mouse_pos[1] - 32))
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
@@ -118,11 +123,12 @@ class EnemyGroup:
     def spawn_enemy(self):
         self._number += 1
         self.__numEnemies = self._number      # increases the number of enemies each round                    
+        spacing = 25                        # creates a 25px spacing between the enemies
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
-            random_x = random.randint(0,10)             # the height used is set to a random int near the start if the path and same for the width 
-            random_y = random.randint(379,409)          
+            start_x = 0 - (_ * spacing)             # the x co-ordinates for the allow for spacing between the enemies
+            random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
             self._health += (self._round * 5)                         # increase the health 
-            self._enemy = [random_x,random_y,self._health]             # the positions of the enemies will be stored in an array
+            self._enemy = [start_x,random_y,self._health]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
     def updateEnemies(self,game_screen):
@@ -134,25 +140,19 @@ class EnemyGroup:
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
             game_screen.blit(self._image,(self._enemy[0],self._enemy[1]))       # updates the screen removing "dead" enemies
-    
     def movement(self):
-        for _ in self._enemies:
-            if self._enemy[0] < 390:
-                self._speed = random.uniform(0.1,0.2)
-                self._enemy[0] += self._speed
-            elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.1,0.2)
-                self._enemy[1] -= self._speed 
-            elif self._enemy[0] >389 and self._enemy[0] < 830:
-                self._speed = random.uniform(0.1,0.2)
-                self._enemy[0] += self._speed
-            elif self._enemy[1] < 430 and self._enemy[1] > 280:
-                self._speed = random.uniform(0.1,0.2)
-                self._enemy[1] += self._speed
-            elif self._enemy[0] < 1250 and self._enemy[1] > 829:
-                self._speed = random.uniform(0.1,0.2)
-                self._enemy[0] += self._speed
-        
+        self._speed = 0.3                                                 # sets the initial speed to 0.3
+        for enemy in self._enemies:                                        # iterates through the alive enemies
+            if enemy[0] < 390:                                          # checks the x position of the enemies
+                enemy[0] += self._speed                                         # if the x poisition is less than 390 it will move the enemy to the right
+            elif enemy[0] >= 390 and enemy[0] <= 395 and enemy[1] > 280:            
+                enemy[1] -= self._speed                                     # The enemy will move up by the set speed
+            elif enemy[1] <= 280 and enemy[0] < 830:
+                enemy[0] += self._speed
+            elif enemy[0] >= 830 and enemy[0] <= 835 and enemy[1] < 395:        # its mostly self explanatory
+                enemy[1] += self._speed
+            else:
+                enemy[0] += self._speed                                               
 class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
@@ -210,6 +210,7 @@ class MainLoop:
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
+            self.__tower_selection._enemies = self.__enemyGroup._enemies
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
             self.displayStats()
