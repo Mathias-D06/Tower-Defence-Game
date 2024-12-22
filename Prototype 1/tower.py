@@ -11,9 +11,9 @@ class Tower():                              # creates the tower class
         self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 40
         self._damage2 = 65
-        self._type1 = image.load("towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
-        self._type2 = image.load("towerDefense_tile250.png")
-        self._projectile = image.load("towerDefense_tile251.png")      # the same for the projectile
+        self._type1 = image.load("Prototype 1 Assets/towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
+        self._type2 = image.load("Prototype 1 Assets/towerDefense_tile250.png")
+        self._projectile = image.load("Prototype 1 Assets/towerDefense_tile251.png")      # the same for the projectile
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
         self._type2_cost = 200
         self._towers = []                                       # initialsies the towers list
@@ -105,10 +105,10 @@ class TowerSelection(Tower):                            # class specific for the
 
 class EnemyGroup:    
     def __init__(self):
-        self._image = image.load("towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
+        self._image = image.load("Prototype 1 Assets/towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._health = 40                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 1
-        self._speed = 0                                         # the enemy speed is set to 6
+        self._speed = 0                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
         self._number = 4                                                     
     
@@ -153,12 +153,12 @@ class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
         self._game_screen = display.set_mode((1288,728))             # the game screen is set to a certain size
-        self.__map = image.load("map.png")                            # the map is loaded with an image
+        self.__map = image.load("Prototype 1 Assets\map.png")                            # the map is loaded with an image
         self.__font = font.Font(None,36)                              # the font is set to a size of 36
         self.__tower_selection = TowerSelection()                     # will inherit from the TowerSelection class for its attributes
         self.__select_rect = Rect(400,575,488,153)                   # this is the black rectangle which will be the background for the selection (it will be at the bottom)
-        self.__tower1 = image.load("towerDefense_tile249.png")
-        self.__tower2 = image.load("towerDefense_tile250.png")
+        self.__tower1 = image.load("Prototype 1 Assets/towerDefense_tile249.png")
+        self.__tower2 = image.load("Prototype 1 Assets/towerDefense_tile250.png")
         self.__tower1_rect = Rect(450,600,64,64)                    # this is the outline for the towers in the tower selection box
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
