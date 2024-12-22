@@ -1,4 +1,5 @@
 from pygame import *
+from tower.py import MainLoop
 init()
 mixer.init()
 font.init()
@@ -29,12 +30,16 @@ class MenuLoop:
        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
            print("Opening Settings")
    
-   def MainLoop(self):
+   def SystemLoop(self):
        while not self.__start and not self.__exit:
            mouse_pos = mouse.get_pos()
            for e in event.get():
                if e.type == QUIT:
                    self.__exit = True
+               elif self.__start:
+                   game = MainLoop()
+                   game.MainLoop()
+                    
 
            self._main_screen.blit(self._background,(0,0))
            self.Buttons()
@@ -45,4 +50,4 @@ class MenuLoop:
        return self.__start
 
 system = MenuLoop()
-system.MainLoop()
+system.SystemLoop()
