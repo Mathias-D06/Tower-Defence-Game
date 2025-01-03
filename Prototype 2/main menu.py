@@ -9,7 +9,6 @@ display.set_caption("Frontlines")
 class MenuLoop:
    def __init__(self):
        self.__exit = False      # sets the exit condition to false
-       self.__start = False     # sets the start condition to false
        self._main_screen = display.set_mode((1285,700))  # sets the screen size
        self._background = image.load("Prototype 2\Prototype 2 Assets\image_fx_ (1) downscale.jpg") # loads the background image
        mixer.music.load("Prototype 2\Prototype 2 Assets\menu_chill.wav")  # loads the background music
@@ -26,14 +25,13 @@ class MenuLoop:
    
    def Collision(self, mouse_pos):    
        if self.__start_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # checks for mouse collision and mouse click
-           self.__start = True # sets start to true
            mixer.music.stop() # stops the music
            os.system('python "Prototype 1/tower.py"') # opens the main game
        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # same as above
            print("Opening Settings") # currently a placeholder
    
    def SystemLoop(self):
-       while not self.__start and not self.__exit: # checks if the start and exit conditions are false
+       while not self.__exit: # checks if the exit conditions is false
            mouse_pos = mouse.get_pos() # gets the mouse position constantly
            for e in event.get(): # checks for events
                if e.type == QUIT:  # if the user closes the window
