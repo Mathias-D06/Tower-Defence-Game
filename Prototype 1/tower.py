@@ -5,6 +5,7 @@ display.set_caption('Frontlines')
 font.init()
 clock = time.Clock()
 import random
+mixer.init()
 
 class Tower():                              # creates the tower class
     def __init__(self):
@@ -163,7 +164,9 @@ class MainLoop:
         self.__tower2_rect = Rect(750,600,64,64)
         self.__tower_selection._tower1_rect = self.__tower1_rect        # makes it so that the TowerSelection class can use it for selection
         self.__tower_selection._tower2_rect = self.__tower2_rect
-        self.__enemyGroup = EnemyGroup()    
+        self.__enemyGroup = EnemyGroup() 
+        mixer.music.load("Prototype 1\Prototype 1 Assets\loop3.ogg")
+        mixer.music.play(-1)   
 
     def displayStats(self):
         self._display_money = self.__font.render("Money:" + str(self.__tower_selection._money), True, (255,255,255))
