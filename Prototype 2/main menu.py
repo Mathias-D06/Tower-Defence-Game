@@ -1,4 +1,6 @@
 from pygame import *
+import subprocess
+import sys
 import os
 init()
 mixer.init()
@@ -14,6 +16,7 @@ class MenuLoop:
        mixer.music.load("Prototype 2\Prototype 2 Assets\menu_chill.wav")  # loads the background music
        mixer.music.play(-1) # plays the background music in a continuous loop
        self.__font = font.Font(None,50) # sets the font and size of the text
+       self.__start = False
    
    def Buttons(self):
        self.__start_button = self.__font.render("Start", True, (255,255,255)) # sets the text and colour of the text
@@ -26,12 +29,13 @@ class MenuLoop:
    def Collision(self, mouse_pos):    
        if self.__start_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # checks for mouse collision and mouse click
            mixer.music.stop() # stops the music
-           os.system('python "Prototype 1/tower.py"') # opens the main game
+           self.__start = True
+           subprocess.Popen(['python', 'Prototype 1/tower.py'])
        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # same as above
            print("Opening Settings") # currently a placeholder
    
    def SystemLoop(self):
-       while not self.__exit: # checks if the exit conditions is false
+       while not self.__start and not self.__exit: # checks if the exit conditions is false
            mouse_pos = mouse.get_pos() # gets the mouse position constantly
            for e in event.get(): # checks for events
                if e.type == QUIT:  # if the user closes the window
