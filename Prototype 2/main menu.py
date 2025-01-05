@@ -15,6 +15,7 @@ class MenuLoop:
        mixer.music.play(-1)                             # plays the background music in a continuous loop
        self.__font = font.Font(None,50)                 # sets the font and size of the text
        self.__start = False
+       self.__settings = False
    
    def Buttons(self):
        self.__start_button = self.__font.render("Start", True, (255,255,255)) # sets the text and colour of the text
@@ -31,9 +32,18 @@ class MenuLoop:
            subprocess.Popen(['python', 'Prototype 1/tower.py'])         # opens a new window of tower.py and closes the main menu screen 
        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # same as above
            print("Opening Settings")                        # currently a placeholder
-   
+           self.__settings = True
+    
+   def SettingsScreen(self,main_screen):
+        self.__font = font.Font(None, 36)
+        self.__back_button = font.render("Back",True,(255,255,255))
+        self.__back_rect = self._back_button.get_rect(topleft=(50, 600))
+        while self.__settings:
+            
+
+
    def SystemLoop(self):
-       while not self.__start and not self.__exit:                  # checks if the exit conditions is false
+       while not self.__start and not self.__exit and not self.__settings:                  # checks if the exit conditions is false
            mouse_pos = mouse.get_pos()                                  # gets the mouse position constantly
            for e in event.get():                                    # checks for events
                if e.type == QUIT:                                       # if the user closes the window
