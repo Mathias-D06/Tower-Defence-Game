@@ -6,80 +6,98 @@ font.init()
 clock = time.Clock()
 display.set_caption("Frontlines")
 
+class VolumeSlider:
+    def __init__(self, pos:tuple, size:tuple, initial:float, min:int, max:int):
+        self.__pos = pos
+        self.__size = size
+        self._slider_left = self.__pos[0] - (size[0]//2)
+        self._slider_right = self.__pos[0] + (size[0]//2)
+        self._slider_top = self.__pos[1] - (size[1]//2)
+        self.min = min
+        self.max = max
+        self._initial = (self._slider_right - self._slider_left) * initial
+        self._container_rect = Rect(self._slider_left, self._slider_top, self.__size[0], self.__size[1])
+        self._button_rect = Rect(self._slider_left + (self._initial - 5), self._slider_top, 10, self.__size[1])
+
+    def drawSlider(self, screen):
+        draw.rect(screen, (0, 0, 0), self._container_rect)
+        draw.rect(screen, (255, 0, 0), self._button_rect)
 
 class MenuLoop:
-   def __init__(self):
-       self.__exit = False                              # sets the exit condition to false
-       self._main_screen = display.set_mode((1285,700))  # sets the screen size
-       self._background = image.load("Prototype 2\Prototype 2 Assets\image_fx_ (1) downscale.jpg") # loads the background image
-       mixer.music.load("Prototype 2\Prototype 2 Assets\menu_chill.wav")  # loads the background music
-       mixer.music.play(-1)                             # plays the background music in a continuous loop
-       self.__font = font.Font(None,50)                 # sets the font and size of the text
-       self.__start = False
-       self.__settings = False
-   
-   def Buttons(self):
-       self.__start_button = self.__font.render("Start", True, (255,255,255)) # sets the text and colour of the text
-       self.__settings_button = self.__font.render("Settings", True, (255,255,255)) # same for this
-       self.__start_rect = self.__start_button.get_rect(topleft=(300,550)) # sets the position of the text using the top left corner
-       self.__settings_rect = self.__settings_button.get_rect(topleft=(850,550)) # same for this
-       self._main_screen.blit(self.__start_button, self.__start_rect) # displays the text on the screen
-       self._main_screen.blit(self.__settings_button, self.__settings_rect) # same for this
-   
-   def Collision(self, mouse_pos):    
-       if self.__start_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # checks for mouse collision and mouse click
-           mixer.music.stop()                       # stops the music
-           self.__start = True                          # sets start to True
-           subprocess.Popen(['python', 'Prototype 1/tower.py'])         # opens a new window of tower.py and closes the main menu screen 
-       elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # same as above
-           self.__settings = True
-    
-   def SystemLoop(self):
-       while not self.__start and not self.__exit and not self.__settings:                  # checks if the exit conditions is false
-           mouse_pos = mouse.get_pos()                                  # gets the mouse position constantly
-           for e in event.get():                                    # checks for events
-               if e.type == QUIT:                                       # if the user closes the window
-                   self.__exit = True                                   # sets exit to true                   
+    def __init__(self):
+        self.__exit = False
+        self._main_screen = display.set_mode((1285,700))
+        self._background = image.load("Prototype 2\Prototype 2 Assets\image_fx_ (1) downscale.jpg")
+        mixer.music.load("Prototype 2\Prototype 2 Assets\menu_chill.wav")
+        mixer.music.play(-1)
+        self.__font = font.Font(None,50)
+        self.__start = False
+        self.__settings = False
 
-           self._main_screen.blit(self._background,(0,0))       # blits the background image at the top left corner
-           self.Buttons()                                               # runs the buttons function
-           self.Collision(mouse_pos)                                # checks for collision using the mouse position as a parameter
-           display.flip() 
-           clock.tick(60)                                             # sets the frame rate to 60
+    def Buttons(self):
+        self.__start_button = self.__font.render("Start", True, (255,255,255))
+        self.__settings_button = self.__font.render("Settings", True, (255,255,255))
+        self.__start_rect = self.__start_button.get_rect(topleft=(300,550))
+        self.__settings_rect = self.__settings_button.get_rect(topleft=(850,550))
+        self._main_screen.blit(self.__start_button, self.__start_rect)
+        self._main_screen.blit(self.__settings_button, self.__settings_rect)
 
-system = MenuLoop()                                             # creates an instance of the class
-system.SystemLoop()                                            # runs the main loop
+    def Collision(self, mouse_pos):
+        if self.__start_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
+            mixer.music.stop()
+            self.__start = True
+            subprocess.Popen(['python', 'Prototype 1/tower.py'])
+        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
+            self.__settings = True
+
+    def SystemLoop(self):
+        while not self.__start and not self.__exit and not self.__settings:
+            mouse_pos = mouse.get_pos()
+            for e in event.get():
+                if e.type == QUIT:
+                    self.__exit = True
+            self._main_screen.blit(self._background, (0, 0))
+            self.Buttons()
+            self.Collision(mouse_pos)
+            if self.__settings:
+                return SettingsScreen().ScreenLoop()
+            display.flip()
+            clock.tick(60)
 
 class SettingsScreen(MenuLoop):
     def __init__(self):
         MenuLoop.__init__(self)
         self.__font = font.Font(None, 36)
-        self.__back_button = self.__font.render("Back", True, (255,255,255))  # Fixed: use self.__font
-        self.__back_rect = self.__back_button.get_rect(topleft=(50, 600))  # Fixed: use __back_button
-        self.__volume = None
         self._settingsScreen = self._main_screen
         self.__settings = True
         self.__exit = False
-        
+        self.slider = VolumeSlider((642, 300), (100, 30), 0.5, 0, 100)
+
+    def Return(self, mouse_pos):
+        self.__back_button = self.__font.render("Back", True, (255,255,255))
+        self.__back_rect = self.__back_button.get_rect(topleft=(50, 600))
+        self._settingsScreen.blit(self.__back_button, self.__back_rect)
+        if self.__back_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
+            self.__settings = False
+            return "menu"
+
+    def drawSlider(self):
+        self.slider.drawSlider(self._settingsScreen)
+
     def ScreenLoop(self):
         while self.__settings and not self.__exit:
             mouse_pos = mouse.get_pos()
             for e in event.get():
                 if e.type == QUIT:
                     self.__exit = True
-                if e.type == MOUSEBUTTONDOWN:
-                    if self.__back_rect.collidepoint(mouse_pos):
-                        self.__settings = False
-            
             self._settingsScreen.fill((40, 40, 40))
-            self._settingsScreen.blit(self.__back_button, self.__back_rect)
+            self.drawSlider()
+            switch = self.Return(mouse_pos)
+            if switch == "menu":
+                return MenuLoop().SystemLoop()
             display.flip()
             clock.tick(60)
 
-screen = SettingsScreen()
-screen.ScreenLoop()
-            
-            
-
-
+system = MenuLoop()
+system.SystemLoop()
 
