@@ -6,6 +6,7 @@ font.init()
 clock = time.Clock()
 display.set_caption("Frontlines")
 
+
 class MenuLoop:
    def __init__(self):
        self.__exit = False                              # sets the exit condition to false
@@ -31,17 +32,8 @@ class MenuLoop:
            self.__start = True                          # sets start to True
            subprocess.Popen(['python', 'Prototype 1/tower.py'])         # opens a new window of tower.py and closes the main menu screen 
        elif self.__settings_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]: # same as above
-           print("Opening Settings")                        # currently a placeholder
            self.__settings = True
     
-   def SettingsScreen(self,main_screen):
-        self.__font = font.Font(None, 36)
-        self.__back_button = font.render("Back",True,(255,255,255))
-        self.__back_rect = self._back_button.get_rect(topleft=(50, 600))
-        while self.__settings:
-            
-
-
    def SystemLoop(self):
        while not self.__start and not self.__exit and not self.__settings:                  # checks if the exit conditions is false
            mouse_pos = mouse.get_pos()                                  # gets the mouse position constantly
@@ -57,3 +49,37 @@ class MenuLoop:
 
 system = MenuLoop()                                             # creates an instance of the class
 system.SystemLoop()                                            # runs the main loop
+
+class SettingsScreen(MenuLoop):
+    def __init__(self):
+        MenuLoop.__init__(self)
+        self.__font = font.Font(None, 36)
+        self.__back_button = self.__font.render("Back", True, (255,255,255))  # Fixed: use self.__font
+        self.__back_rect = self.__back_button.get_rect(topleft=(50, 600))  # Fixed: use __back_button
+        self.__volume = None
+        self._settingsScreen = self._main_screen
+        self.__settings = True
+        self.__exit = False
+        
+    def ScreenLoop(self):
+        while self.__settings and not self.__exit:
+            mouse_pos = mouse.get_pos()
+            for e in event.get():
+                if e.type == QUIT:
+                    self.__exit = True
+                if e.type == MOUSEBUTTONDOWN:
+                    if self.__back_rect.collidepoint(mouse_pos):
+                        self.__settings = False
+            
+            self._settingsScreen.fill((40, 40, 40))
+            self._settingsScreen.blit(self.__back_button, self.__back_rect)
+            display.flip()
+            clock.tick(60)
+
+screen = SettingsScreen()
+screen.ScreenLoop()
+            
+            
+
+
+
