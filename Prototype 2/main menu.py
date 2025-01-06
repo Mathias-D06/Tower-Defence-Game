@@ -19,6 +19,9 @@ class VolumeSlider:
         self._container_rect = Rect(self._slider_left, self._slider_top, self.__size[0], self.__size[1])
         self._button_rect = Rect(self._slider_left + (self._initial - 5), self._slider_top, 10, self.__size[1])
 
+    def moveSlider(self, mouse_pos):
+        self._button_rect.centerx = mouse_pos[0]
+
     def drawSlider(self, screen):
         draw.rect(screen, (0, 0, 0), self._container_rect)
         draw.rect(screen, (255, 0, 0), self._button_rect)
@@ -71,7 +74,7 @@ class SettingsScreen(MenuLoop):
         self._settingsScreen = self._main_screen
         self.__settings = True
         self.__exit = False
-        self.slider = VolumeSlider((642, 300), (100, 30), 0.5, 0, 100)
+        self.slider = VolumeSlider((642, 400), (500, 40), 0.5, 0, 100)
 
     def Return(self, mouse_pos):
         self.__back_button = self.__font.render("Back", True, (255,255,255))
@@ -81,17 +84,20 @@ class SettingsScreen(MenuLoop):
             self.__settings = False
             return "menu"
 
-    def drawSlider(self):
+    def drawSlider(self, mouse_pos, mouse_click):
         self.slider.drawSlider(self._settingsScreen)
+        if self.slider._container_rect.collidepoint(mouse_pos) and mouse_click[0]:
+            self.slider.moveSlider(mouse_pos)
 
     def ScreenLoop(self):
         while self.__settings and not self.__exit:
             mouse_pos = mouse.get_pos()
+            mouse_click = mouse.get_pressed()
             for e in event.get():
                 if e.type == QUIT:
                     self.__exit = True
             self._settingsScreen.fill((40, 40, 40))
-            self.drawSlider()
+            self.drawSlider(mouse_pos, mouse_click)
             switch = self.Return(mouse_pos)
             if switch == "menu":
                 return MenuLoop().SystemLoop()
@@ -100,4 +106,5 @@ class SettingsScreen(MenuLoop):
 
 system = MenuLoop()
 system.SystemLoop()
+
 
