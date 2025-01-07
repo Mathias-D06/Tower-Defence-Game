@@ -16,7 +16,7 @@ class VolumeSlider:
         self.min = min
         self.max = max
         self._initial = (self._slider_right - self._slider_left) * initial
-        self._container_rect = Rect(self._slider_left, self._slider_top, self.__size[0], self.__size[1])
+        self._box_rect = Rect(self._slider_left, self._slider_top, self.__size[0], self.__size[1])
         self._button_rect = Rect(self._slider_left + (self._initial - 5), self._slider_top, 10, self.__size[1])
 
     def moveSlider(self, mouse_pos):
@@ -24,7 +24,7 @@ class VolumeSlider:
         self.volumeChange()
 
     def drawSlider(self, screen):
-        draw.rect(screen, (0, 0, 0), self._container_rect)
+        draw.rect(screen, (0, 0, 0), self._box_rect)
         draw.rect(screen, (255, 0, 0), self._button_rect)
     
     def getValue(self):
@@ -85,6 +85,7 @@ class SettingsScreen(MenuLoop):
         self.__settings = True
         self.__exit = False
         self.slider = VolumeSlider((642, 400), (500, 40), 1, 0, 100)
+        self._screen = image.load("Prototype 2\Prototype 2 Assets\image_fx_ (1).jpg")
 
     def Return(self, mouse_pos):
         self.__back_button = self.__font.render("Back", True, (255,255,255))
@@ -100,7 +101,7 @@ class SettingsScreen(MenuLoop):
 
     def drawSlider(self, mouse_pos, mouse_click):
         self.slider.drawSlider(self._settingsScreen)
-        if self.slider._container_rect.collidepoint(mouse_pos) and mouse_click[0]:
+        if self.slider._box_rect.collidepoint(mouse_pos) and mouse_click[0]:
             self.slider.moveSlider(mouse_pos)
 
     def ScreenLoop(self):
@@ -110,7 +111,7 @@ class SettingsScreen(MenuLoop):
             for e in event.get():
                 if e.type == QUIT:
                     self.__exit = True
-            self._settingsScreen.fill((40, 40, 40))
+            self._settingsScreen.blit(self._screen, (0, 0))
             self.drawSlider(mouse_pos, mouse_click)
             self.Text()
             switch = self.Return(mouse_pos)
