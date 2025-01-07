@@ -35,6 +35,7 @@ class VolumeSlider:
     def volumeChange(self):
         self.volume = (self.getValue() / 100)
         mixer.music.set_volume(self.volume)
+        self.current_volume = mixer.music.get_volume()
 
 class MenuLoop:
     def __init__(self):
