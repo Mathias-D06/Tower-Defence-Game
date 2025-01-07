@@ -84,7 +84,7 @@ class SettingsScreen(MenuLoop):
         self._settingsScreen = self._main_screen
         self.__settings = True
         self.__exit = False
-        self.slider = VolumeSlider((642, 400), (500, 40), 0.5, 0, 100)
+        self.slider = VolumeSlider((642, 400), (500, 40), 1, 0, 100)
 
     def Return(self, mouse_pos):
         self.__back_button = self.__font.render("Back", True, (255,255,255))
