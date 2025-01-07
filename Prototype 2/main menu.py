@@ -21,10 +21,20 @@ class VolumeSlider:
 
     def moveSlider(self, mouse_pos):
         self._button_rect.centerx = mouse_pos[0]
+        self.volumeChange()
 
     def drawSlider(self, screen):
         draw.rect(screen, (0, 0, 0), self._container_rect)
         draw.rect(screen, (255, 0, 0), self._button_rect)
+    
+    def getValue(self):
+        self.range = self._slider_right - self._slider_left - 1
+        self.button_value = self._button_rect.centerx - self._slider_left
+        return (self.button_value/self.range)*(self.max-self.min)+self.min
+    
+    def volumeChange(self):
+        self.volume = (self.getValue() / 100)
+        mixer.music.set_volume(self.volume)
 
 class MenuLoop:
     def __init__(self):
@@ -70,7 +80,7 @@ class MenuLoop:
 class SettingsScreen(MenuLoop):
     def __init__(self):
         MenuLoop.__init__(self)
-        self.__font = font.Font(None, 36)
+        self.__font = font.Font(None, 40)
         self._settingsScreen = self._main_screen
         self.__settings = True
         self.__exit = False
@@ -83,6 +93,10 @@ class SettingsScreen(MenuLoop):
         if self.__back_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
             self.__settings = False
             return "menu"
+    
+    def Text(self):
+        self.__volume_text = self.__font.render("Volume", True, (255,255,255))
+        self._settingsScreen.blit(self.__volume_text, (590,500))
 
     def drawSlider(self, mouse_pos, mouse_click):
         self.slider.drawSlider(self._settingsScreen)
@@ -98,6 +112,7 @@ class SettingsScreen(MenuLoop):
                     self.__exit = True
             self._settingsScreen.fill((40, 40, 40))
             self.drawSlider(mouse_pos, mouse_click)
+            self.Text()
             switch = self.Return(mouse_pos)
             if switch == "menu":
                 return MenuLoop().SystemLoop()
