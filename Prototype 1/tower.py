@@ -30,10 +30,10 @@ class Tower():                              # creates the tower class
         return distance <= self.__range                    
     
     def attack(self,enemies):
-        current_time = time.get_ticks()
-        for tower in self._towers:
-            if tower not in self._cooldown_times:
-                self._cooldown_times[tower] = 0
+        current_time = time.get_ticks()                         # gets the current time 
+        for tower in self._towers:                              # iterates through all the different towers
+            if tower not in self._cooldown_times:                   # if a tower is not in the dictionary
+                self._cooldown_times[tower] = 0                         # set its cooldown to 0
             if current_time - self._cooldown_times[tower] >= 200:
                 target = self.newTarget(enemies, tower)  
                 if target:
