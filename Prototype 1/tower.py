@@ -7,6 +7,30 @@ clock = time.Clock()
 import random
 mixer.init()
 
+class Projectile():
+    def __init__(self,x,y,enemy_target):
+        self._x = x
+        self._y = y
+        self._enemy_target = enemy_target
+        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
+        self.__speed = 5
+
+    def move_projectile(self):
+        if self._enemy_target[0] <= 0:
+            return False
+        else:     
+            enemy_centre_x = self._enemy_target[0] + self._image.get_width() // 2        
+            enemy_centre_y = self._enemy_target[1] + self._image.get_height() // 2
+            distance = math.sqrt((enemy_centre_x - self._x)**2 + (enemy_centre_y - self._y)**2)
+            if distance == 0:
+                return True
+
+
+
+
+
+
+
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
@@ -14,7 +38,6 @@ class Tower():                              # creates the tower class
         self._damage2 = 65
         self._type1 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile250.png")
-        self._projectile = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")      # the same for the projectile
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
         self._type2_cost = 200
         self._towers = []                                       # initialsies the towers list
