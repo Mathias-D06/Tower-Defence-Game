@@ -7,7 +7,7 @@ clock = time.Clock()
 import random
 mixer.init()
 
-class Projectile():
+'''class Projectile():
     def __init__(self,x,y,enemy_target):
         self._x = x
         self._y = y
@@ -24,7 +24,7 @@ class Projectile():
             distance = math.sqrt((enemy_centre_x - self._x)**2 + (enemy_centre_y - self._y)**2)
             if distance == 0:
                 return True
-
+'''
 
 
 
