@@ -161,6 +161,7 @@ class EnemyGroup:
         for self._enemy in self._enemies:                 # iterates through the current enemies
             self.movement()                            # calls the movement function for the alive ones
             game_screen.blit(self._image,(self._enemy[0],self._enemy[1]))       # updates the screen removing "dead" enemies
+    
     def movement(self):
         for enemy in self._enemies:                                        # iterates through the alive enemies
             if enemy[0] < 390:                                          # checks the x position of the enemies

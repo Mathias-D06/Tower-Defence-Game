@@ -29,6 +29,7 @@ class Main:
         if self.__retry_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
             self.__retry = True
             subprocess.Popen(['python', 'Prototype 1/tower.py'])
+            self.__exit = True
 
     def MainLoop(self):
         while not self.__exit:
