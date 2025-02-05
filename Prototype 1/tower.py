@@ -7,7 +7,7 @@ clock = time.Clock()
 import random
 mixer.init()
 
-'''class Projectile():
+class Projectile():
     def __init__(self,x,y,enemy_target):
         self._x = x
         self._y = y
@@ -24,7 +24,6 @@ mixer.init()
             distance = math.sqrt((enemy_centre_x - self._x)**2 + (enemy_centre_y - self._y)**2)
             if distance == 0:
                 return True
-'''
 
 
 
@@ -189,7 +188,7 @@ class MainLoop:
         self.__tower_selection._tower2_rect = self.__tower2_rect
         self.__enemyGroup = EnemyGroup() 
         mixer.music.load("Prototype 1\Prototype 1 Assets\loop3.ogg")
-        mixer.music.play(-1)   
+        mixer.music.play(-1)
 
     def displayStats(self):
         self._display_money = self.__font.render("Money:" + str(self.__tower_selection._money), True, (255,255,255))
