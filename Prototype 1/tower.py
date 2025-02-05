@@ -15,7 +15,7 @@ class Projectile():
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
         self.__speed = 5
 
-    def move_projectile(self):
+    def distanceCheck(self):
         if self._enemy_target[0] <= 0:
             return False
         else:     
@@ -25,6 +25,7 @@ class Projectile():
             if distance == 0:
                 return True
 
+        
 
 
 
