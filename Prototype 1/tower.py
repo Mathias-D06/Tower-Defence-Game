@@ -6,6 +6,7 @@ font.init()
 clock = time.Clock()
 import random
 mixer.init()
+import time as t
 
 class Projectile():
     def __init__(self,x,y,enemy_target):
@@ -57,7 +58,7 @@ class Tower():                              # creates the tower class
         for tower in self._towers:                              # iterates through all the different towers
             if tower not in self._cooldown_times:                   # if a tower is not in the dictionary
                 self._cooldown_times[tower] = 0                         # set its cooldown to 0
-            if current_time - self._cooldown_times[tower] >= 200:
+            if current_time - self._cooldown_times[tower] >= 500:
                 target = self.newTarget(enemies, tower)  
                 if target:
                     if tower[2] == self._type1:
@@ -174,7 +175,7 @@ class EnemyGroup:
             elif enemy[0] >= 830 and enemy[0] <= 835 and enemy[1] < 395:        # its mostly self explanatory
                 enemy[1] += self._speed
             else:
-                enemy[0] += self._speed                                              
+                enemy[0] += self._speed                                        
 class MainLoop:
     def __init__(self):
         self.__exit_game = False                                  # the exit game variable is set to false initially
