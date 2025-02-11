@@ -7,6 +7,7 @@ clock = time.Clock()
 import random
 mixer.init()
 import time as t
+import subprocess
 
 class Projectile():
     def __init__(self,x,y,enemy_target):
@@ -58,7 +59,7 @@ class Tower():                              # creates the tower class
         for tower in self._towers:                              # iterates through all the different towers
             if tower not in self._cooldown_times:                   # if a tower is not in the dictionary
                 self._cooldown_times[tower] = 0                         # set its cooldown to 0
-            if current_time - self._cooldown_times[tower] >= 500:
+            if current_time - self._cooldown_times[tower] >= 100:
                 target = self.newTarget(enemies, tower)  
                 if target:
                     if tower[2] == self._type1:
@@ -76,6 +77,7 @@ class Tower():                              # creates the tower class
             if self.inRange(tower, enemy):      
                 return enemy
         return None
+
 class TowerSelection(Tower):                            # class specific for the selection of towers by the player
     def __init__(self):
         Tower.__init__(self)                             # makes sure that all attributes are inherited correctly
@@ -135,7 +137,8 @@ class EnemyGroup:
         self._round = 0                                          # sets the number of rounds to 0
         self._speed = 0                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
-        self._number = 4                                                    
+        self._number = 3
+        self._spawn = True                                                   
     
     def take_damage(self,damage):       
         self._health -= damage          # will reduce the health by the damage inflicted
@@ -175,10 +178,11 @@ class EnemyGroup:
             elif enemy[0] >= 830 and enemy[0] <= 835 and enemy[1] < 395:        # its mostly self explanatory
                 enemy[1] += self._speed
             else:
-                enemy[0] += self._speed                                        
+                enemy[0] += self._speed
+                                 
 class MainLoop:
     def __init__(self):
-        self.__exit_game = False                                  # the exit game variable is set to false initially
+        self.__exit_game = False                                  # the exit game variable is set to false initially 
         self._game_screen = display.set_mode((1288,728))             # the game screen is set to a certain size
         self.__map = image.load("Prototype 1\Prototype 1 Assets\map.png")                            # the map is loaded with an image
         self.__font = font.Font(None,36)                              # the font is set to a size of 36
@@ -211,6 +215,11 @@ class MainLoop:
         self._game_screen.blit(cost1, (430,685))
         self._game_screen.blit(cost2, (730,685))
 
+    def gameOver(self):
+        if self._spawn == False:
+            subprocess.Popen(['python', 'Prototype 1/tower.py'])
+            self.__exit_game = True
+       
     def gamescreen(self):
         while not self.__exit_game:
             mouse_pos = mouse.get_pos()  # gets the mouse position constantly while the game is running
@@ -229,7 +238,7 @@ class MainLoop:
             
             if not self.__enemyGroup._enemies:          # if there are no more enemies in the array
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
-                self.__enemyGroup._round+=1
+                self.__enemyGroup._round+=1            
             
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
@@ -239,6 +248,7 @@ class MainLoop:
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
             self.displayStats()
+            self.gameOver()
             display.flip()
             clock.tick(60)                                  # sets the refresh rate to 60hz
 
