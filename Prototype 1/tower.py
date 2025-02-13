@@ -6,7 +6,6 @@ font.init()
 clock = time.Clock()
 import random
 mixer.init()
-import time as t
 import subprocess
 
 class Projectile():
@@ -35,7 +34,7 @@ class Projectile():
 
 class Tower():                              # creates the tower class
     def __init__(self):
-        self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
+        self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
         self._damage1 = 40
         self._damage2 = 65
         self._type1 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
@@ -151,7 +150,7 @@ class EnemyGroup:
         spacing = 25                        # creates a 25px spacing between the enemies
         self.__numEnemies = min(self._number, 20)  # limit to 20 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
-            start_x = 0 - (_ * spacing)             # the x co-ordinates for the allow for spacing between the enemies
+            start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
             random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
             self._health += (self._round * 2)                         # increase the health 
             self._enemy = [start_x,random_y,self._health]             # the positions of the enemies will be stored in an array
@@ -179,6 +178,8 @@ class EnemyGroup:
                 enemy[1] += self._speed
             else:
                 enemy[0] += self._speed
+        if enemy[0] > 1288:
+            self._spawn = False
                                  
 class MainLoop:
     def __init__(self):
@@ -214,10 +215,10 @@ class MainLoop:
         cost2 = self.__font.render("Cost: " + str(self.__tower_selection._type2_cost), True, (255,255,255))
         self._game_screen.blit(cost1, (430,685))
         self._game_screen.blit(cost2, (730,685))
-
+       
     def gameOver(self):
-        if self._spawn == False:
-            subprocess.Popen(['python', 'Prototype 1/tower.py'])
+        if self.__enemyGroup._spawn == False:
+            subprocess.Popen(['python', 'Prototype 3/game over.py'])
             self.__exit_game = True
        
     def gamescreen(self):
