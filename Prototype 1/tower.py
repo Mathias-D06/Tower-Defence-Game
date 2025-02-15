@@ -8,30 +8,6 @@ import random
 mixer.init()
 import subprocess
 
-class Projectile():
-    def __init__(self,x,y,enemy_target):
-        self._x = x
-        self._y = y
-        self._enemy_target = enemy_target
-        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
-        self.__speed = 5
-
-    def distanceCheck(self):
-        if self._enemy_target[0] <= 0:
-            return False
-        else:     
-            enemy_centre_x = self._enemy_target[0] + self._image.get_width() // 2        
-            enemy_centre_y = self._enemy_target[1] + self._image.get_height() // 2
-            distance = math.sqrt((enemy_centre_x - self._x)**2 + (enemy_centre_y - self._y)**2)
-            if distance == 0:
-                return True
-
-        
-
-
-
-
-
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
@@ -128,6 +104,15 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
                     self._selected_tower = None
+
+class Projectile(TowerSelection):
+    def __init__(self,x,y,target):
+        TowerSelection.__init__(self)
+        self._x = x
+        self._y = y
+        self._enemy_target = target
+        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
+        self.__speed = 5
 
 class EnemyGroup:    
     def __init__(self):
