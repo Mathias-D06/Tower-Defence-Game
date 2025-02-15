@@ -20,6 +20,7 @@ class Tower():                              # creates the tower class
         self._towers = []                                       # initialsies the towers list
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
         self._money = 250                                # set money to the starting number
+        self._projectiles = []
     
     def inRange(self,tower,enemy):
         centre_x = tower[0] + self._type1.get_width() // 2              # check for the centre of the tower image x co-ordinate
@@ -37,16 +38,20 @@ class Tower():                              # creates the tower class
             if current_time - self._cooldown_times[tower] >= 100:
                 target = self.newTarget(enemies, tower)  
                 if target:
-                    if tower[2] == self._type1:
-                        target[2] -= self._damage1
-                    elif tower[2] == self._type2:
-                        target[2] -= self._damage2
+                    projectile = Projectile(tower[0], tower[1], target)
+                    self._projectiles.append(projectile)
                     self._cooldown_times[tower] = current_time
         for enemy in enemies:
             if enemy[2] <= 0:
                 self._money += 15
         return [enemy for enemy in enemies if enemy[2] > 0]
 
+    def update_projectiles(self,enemies):
+        for projectile in self._projectiles[:]:
+            projectile.move()
+            if projectile.check_collision():
+                projectile.target[2] -= projectile.damage
+                self._projectiles.remove(projectile)
     def newTarget(self, enemies, tower):
         for enemy in enemies:                   
             if self.inRange(tower, enemy):      
@@ -113,6 +118,23 @@ class Projectile(TowerSelection):
         self._enemy_target = target
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
         self.__speed = 5
+    
+    def move(self):
+        dx = self._enemy_target[0] - self._x
+        dy = self._enemy_target[1] - self._y
+        distance = math.sqrt(dx**2 + dy**2)
+        if distance > 0:
+            self._x += self.__speed * dx / distance
+            self._y += self.__speed * dy / distance
+    
+    def check_collision(self):
+        dx = self._enemy_target[0] - self._x
+        dy = self._enemy_target[1] - self._y
+        distance = math.sqrt(dx**2 + dy**2)
+        return distance < 5
+    
+    def draw(self, game_screen):
+        game_screen.blit(self._image, (self._x - 16, self._y - 16))
 
 class EnemyGroup:    
     def __init__(self):
@@ -226,6 +248,9 @@ class MainLoop:
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
                 self.__enemyGroup._round+=1            
             
+            for projectile in self.__tower_selection._projectiles:
+                projectile.draw(self._game_screen)
+            
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
@@ -233,6 +258,7 @@ class MainLoop:
             self.__tower_selection._enemies = self.__enemyGroup._enemies
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             self.__enemyGroup.updateEnemies(self._game_screen)
+            self.__tower_selection.update_projectiles(self.__enemyGroup._enemies)
             self.displayStats()
             self.gameOver()
             display.flip()
