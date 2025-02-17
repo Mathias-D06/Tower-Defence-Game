@@ -65,8 +65,7 @@ class Tower():                              # creates the tower class
         for tower in self._towers:
             if tower in self._cooldown_times:
                 if current_time - self._cooldown_times[tower] < 1000:  # 1 second cooldown
-                    continue
-            target = self.newTarget(enemies, tower)
+                    target = self.newTarget(enemies, tower)
             if target:
                 if tower[2] == self._type1:
                     damage = self._damage1
