@@ -242,8 +242,7 @@ class MainLoop:
     def gamescreen(self):
         while not self.__exit_game:
             mouse_pos = mouse.get_pos()
-            events = event.get()
-            for e in events:
+            for e in event.get():
                 if e.type == QUIT:
                     self.__exit_game = True
                 elif e.type == MOUSEBUTTONDOWN:
