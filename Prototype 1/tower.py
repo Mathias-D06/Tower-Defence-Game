@@ -239,22 +239,22 @@ class MainLoop:
         if self.__enemyGroup._spawn == False:
             subprocess.Popen(['python', 'Prototype 3/game over.py'])
             self.__exit_game = True
-       
     def gamescreen(self):
         while not self.__exit_game:
-            mouse_pos = mouse.get_pos()  # gets the mouse position constantly while the game is running
-            for e in event.get():
+            mouse_pos = mouse.get_pos()
+            events = event.get()
+            for e in events:
                 if e.type == QUIT:
-                    self.__exit_game = True   # will quit the game
+                    self.__exit_game = True
                 elif e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
-                        if self.__tower_selection._selected_tower: # checks to see if there is a tower that has been selected
-                            self.__tower_selection.place_tower(mouse_pos)  # this will run the code to then place the tower onto the game map
-                        else:                                                   # if not
-                            self.__tower_selection.select_tower(mouse_pos)  # will run the select tower function if the left mouse button is pressed
+                        if self.__tower_selection._selected_tower:
+                            self.__tower_selection.place_tower(mouse_pos)
+                        else:
+                            self.__tower_selection.select_tower(mouse_pos)
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
-                        self.__tower_selection._selected_tower = None  # will cancel the selection if the escape button is pressed
+                        self.__tower_selection._selected_tower = None
             
             if not self.__enemyGroup._enemies:          # if there are no more enemies in the array
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
