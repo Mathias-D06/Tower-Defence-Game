@@ -8,6 +8,36 @@ import random
 mixer.init()
 import subprocess
 
+class Projectile:
+    def __init__(self, x, y, target, damage):
+        self._x = x
+        self._y = y
+        self._target = target 
+        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
+        self.__speed = 5
+        self.damage = damage
+        self.collision_radius = 20
+
+    def move(self):
+        if self._target:
+            dx = self._target[0] - self._x  
+            dy = self._target[1] - self._y  
+            distance = math.sqrt(dx**2 + dy**2)
+            if distance > 0:
+                self._x += self.__speed * dx / distance
+                self._y += self.__speed * dy / distance
+
+    def check_collision(self):
+        if self._target:
+            dx = self._target[0] - self._x
+            dy = self._target[1] - self._y
+            distance = math.sqrt(dx**2 + dy**2)
+            return distance < self.collision_radius
+        return False
+
+    def draw(self, game_screen):
+        game_screen.blit(self._image, (self._x - 16, self._y - 16))
+
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
@@ -33,30 +63,33 @@ class Tower():                              # creates the tower class
     def attack(self, enemies):
         current_time = time.get_ticks()
         for tower in self._towers:
-            if tower not in self._cooldown_times:
-                self._cooldown_times[tower] = 0
-            if current_time - self._cooldown_times[tower] >= 100:
-                target = self.newTarget(enemies, tower)
-                if target:
-                    if tower[2] == self._type1:
-                        damage = self._damage1 
-                    else: 
-                        self._damage2
-                    projectile = Projectile(tower[0], tower[1], target, damage)
-                    self._projectiles.append(projectile)
-                    self._cooldown_times[tower] = current_time
+            if tower in self._cooldown_times:
+                if current_time - self._cooldown_times[tower] < 1000:  # 1 second cooldown
+                    continue
+            target = self.newTarget(enemies, tower)
+            if target:
+                if tower[2] == self._type1:
+                    damage = self._damage1
+                else:
+                    damage = self._damage2
+                projectile = Projectile(tower[0], tower[1], target, damage)
+                self._projectiles.append(projectile)
+                self._cooldown_times[tower] = current_time
         for enemy in enemies:
             if enemy[2] <= 0:
                 self._money += 15
         return [enemy for enemy in enemies if enemy[2] > 0]
-
+    
     def update_projectiles(self, enemies):
         for projectile in self._projectiles[:]:
-            projectile.move()
-            if projectile.check_collision():
-                projectile._enemy_target[2] -= projectile.damage
+            if projectile._target[2] > 0:
+                projectile.move()
+                if projectile.check_collision():
+                    projectile._target[2] -= projectile.damage
+                    self._projectiles.remove(projectile)
+            else:
                 self._projectiles.remove(projectile)
-    
+
     def newTarget(self, enemies, tower):
         for enemy in enemies:                   
             if self.inRange(tower, enemy):      
@@ -114,32 +147,6 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
                     self._selected_tower = None
-
-class Projectile:
-    def __init__(self, x, y, target, damage):
-        self._x = x
-        self._y = y
-        self._enemy_target = target
-        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
-        self.__speed = 5
-        self.damage = damage
-
-    def move(self):
-        dx = self._enemy_target[0] - self._x
-        dy = self._enemy_target[1] - self._y
-        distance = math.sqrt(dx**2 + dy**2)
-        if distance > 0:
-            self._x += self.__speed * dx / distance
-            self._y += self.__speed * dy / distance
-
-    def check_collision(self):
-        dx = self._enemy_target[0] - self._x
-        dy = self._enemy_target[1] - self._y
-        distance = math.sqrt(dx**2 + dy**2)
-        return distance < 5 
-
-    def draw(self, game_screen):
-        game_screen.blit(self._image, (self._x - 16, self._y - 16))
 
 class EnemyGroup:    
     def __init__(self):
@@ -253,18 +260,17 @@ class MainLoop:
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
                 self.__enemyGroup._round+=1           
             
-            for projectile in self.__tower._projectiles:
+            for projectile in self.__tower_selection._projectiles:
                 projectile.draw(self._game_screen) 
                        
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
-            self.__tower.update_projectiles(self.__enemyGroup._enemies)
+            self.__tower_selection.update_projectiles(self.__enemyGroup._enemies)
             self._game_screen.blit(self.__map,(0,0))              # will blit the map to the screen
             self.drawTowerbox()                                 # will run the tower box function
             self._game_screen.blit(self.__tower_selection.stamped_surface, (0, 0))
             self.__tower_selection._enemies = self.__enemyGroup._enemies
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
-            self.__enemyGroup.updateEnemies(self._game_screen)
-            self.Projectile(self._game_screen)           
+            self.__enemyGroup.updateEnemies(self._game_screen)       
             self.displayStats()
             self.gameOver()
             display.flip()
