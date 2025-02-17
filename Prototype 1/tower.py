@@ -25,7 +25,7 @@ class Projectile:
             distance = math.sqrt(dx**2 + dy**2)
             if distance > 0:
                 self._x += self.__speed * dx / distance
-                self._y += self.__speed * dy / distance
+                self._y += self.__speed * dy/ distance
 
     def check_collision(self):
         if self._target:
@@ -64,16 +64,17 @@ class Tower():                              # creates the tower class
         current_time = time.get_ticks()
         for tower in self._towers:
             if tower in self._cooldown_times:
-                if current_time - self._cooldown_times[tower] < 1000:  # 1 second cooldown
+                self._cooldown_times[tower] = 0
+                if current_time - self._cooldown_times[tower] < 500:
                     target = self.newTarget(enemies, tower)
-            if target:
-                if tower[2] == self._type1:
-                    damage = self._damage1
-                else:
-                    damage = self._damage2
-                projectile = Projectile(tower[0], tower[1], target, damage)
-                self._projectiles.append(projectile)
-                self._cooldown_times[tower] = current_time
+                    if target:
+                        if tower[2] == self._type1:
+                            damage = self._damage1
+                        else:
+                            damage = self._damage2
+                        projectile = Projectile(tower[0], tower[1], target, damage)
+                        self._projectiles.append(projectile)
+                        self._cooldown_times[tower] = current_time
         for enemy in enemies:
             if enemy[2] <= 0:
                 self._money += 15
