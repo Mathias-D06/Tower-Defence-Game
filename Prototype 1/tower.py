@@ -63,7 +63,7 @@ class Tower():                              # creates the tower class
     def attack(self, enemies):
         current_time = time.get_ticks()
         for tower in self._towers:
-            if tower in self._cooldown_times:
+            if tower not in self._cooldown_times:
                 self._cooldown_times[tower] = 0
                 if current_time - self._cooldown_times[tower] < 500:
                     target = self.newTarget(enemies, tower)
@@ -82,14 +82,15 @@ class Tower():                              # creates the tower class
     
     def update_projectiles(self, enemies):
         for projectile in self._projectiles[:]:
-            if projectile._target[2] > 0:
-                projectile.move()
-                if projectile.check_collision():
-                    projectile._target[2] -= projectile.damage
-                    self._projectiles.remove(projectile)
-            else:
-                self._projectiles.remove(projectile)
-
+            print(type(projectile))
+            projectile.move()
+            if projectile.check_collision():
+                for enemy in enemies:
+                    if enemy[0] == projectile._target[0] and enemy[1] == projectile._target[1]:
+                        enemy[2] -= projectile.damage
+                        self._projectiles.remove(projectile)
+                        break
+    
     def newTarget(self, enemies, tower):
         for enemy in enemies:                   
             if self.inRange(tower, enemy):      
