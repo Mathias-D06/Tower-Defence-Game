@@ -239,6 +239,7 @@ class MainLoop:
         if self.__enemyGroup._spawn == False:
             subprocess.Popen(['python', 'Prototype 3/game over.py'])
             self.__exit_game = True
+    
     def gamescreen(self):
         while not self.__exit_game:
             mouse_pos = mouse.get_pos()
