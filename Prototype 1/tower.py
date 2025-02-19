@@ -13,13 +13,14 @@ class Projectile:
         self._x = x
         self._y = y
         self._target = target
-        self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
+        self._original_image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
+        self._image = self._original_image
         self.__speed = 5
         self.damage = damage
         self.collision_radius = 10
         
     def move(self):
-        if self._target:
+        if self._target and isinstance(self._target, list):
             dx = self._target[0] - self._x
             dy = self._target[1] - self._y
             distance = math.sqrt(dx**2 + dy**2)
@@ -30,7 +31,7 @@ class Projectile:
                 self._image = transform.rotate(self._image, angle)
 
     def check_collision(self):
-        if self._target:
+        if self._target and isinstance(self._target, list):
             dx = self._target[0] - self._x
             dy = self._target[1] - self._y
             distance = math.sqrt(dx**2 + dy**2)
@@ -67,12 +68,12 @@ class Tower():                              # creates the tower class
         for tower in self._towers:
             target = self.newTarget(enemies, tower)
             if target:
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 500:
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 2000:
                     if tower[2] == self._type1:
                         damage = self._damage1
                     else:
                         damage = self._damage2
-                    projectile = Projectile(tower[0], tower[1], target, damage)
+                    projectile = Projectile(tower[0] + self._type1.get_width() // 2, tower[1] + self._type1.get_height() // 2, target, damage)
                     self._projectiles.append(projectile)
                     self._cooldown_times[tower] = current_time
         for enemy in enemies:
@@ -89,11 +90,10 @@ class Tower():                              # creates the tower class
                         enemy[2] -= projectile.damage
                         self._projectiles.remove(projectile)
                         break
-    
     def newTarget(self, enemies, tower):
         for enemy in enemies:                   
             if self.inRange(tower, enemy):   
-                return (enemy[0], enemy[1])
+                return enemy
         return None
 
 class TowerSelection(Tower):                            # class specific for the selection of towers by the player
@@ -163,8 +163,8 @@ class EnemyGroup:
         return self._health <= 0        # returns whether the enemy is alive or not
     
     def spawn_enemy(self):
-        self._number += 1
-        self.__numEnemies = self._number      # increases the number of enemies each round                    
+        self._number += 1                       # increases the number of enemies each round  
+        self.__numEnemies = self._number                        
         self._speed = 0.3                       # sets the initial speed to 0.3
         spacing = 25                        # creates a 25px spacing between the enemies
         self.__numEnemies = min(self._number, 20)  # limit to 20 enemies per round
