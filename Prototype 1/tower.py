@@ -14,24 +14,24 @@ class Projectile:
         self._y = y
         self._target = target
         self._original_image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
-        self._image = self._original_image
+        self._image = self._original_image 
         self.__speed = 5
         self.damage = damage
         self.collision_radius = 10
-        
+
     def move(self):
-        if self._target and isinstance(self._target, list):
-            dx = self._target[0] - self._x
-            dy = self._target[1] - self._y
+        if self._target:
+            dx = self._target[0] - self._x 
+            dy = self._target[1] - self._y 
             distance = math.sqrt(dx**2 + dy**2)
             if distance > 0:
                 self._x += self.__speed * dx / distance
                 self._y += self.__speed * dy / distance
-                angle = math.degrees(math.atan2(-dy, dx))
-                self._image = transform.rotate(self._image, angle)
+                angle = math.degrees(math.atan2(-dy, dx)) -90
+                self._image = transform.rotate(self._original_image, angle)
 
     def check_collision(self):
-        if self._target and isinstance(self._target, list):
+        if self._target:
             dx = self._target[0] - self._x
             dy = self._target[1] - self._y
             distance = math.sqrt(dx**2 + dy**2)
@@ -39,7 +39,8 @@ class Projectile:
         return False
 
     def draw(self, game_screen):
-        game_screen.blit(self._image, (self._x - 16, self._y - 16))
+        rect = self._image.get_rect(center=(self._x, self._y))
+        game_screen.blit(self._image, rect)
 
 class Tower():                              # creates the tower class
     def __init__(self):
@@ -68,28 +69,31 @@ class Tower():                              # creates the tower class
         for tower in self._towers:
             target = self.newTarget(enemies, tower)
             if target:
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 2000:
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 500:
                     if tower[2] == self._type1:
                         damage = self._damage1
                     else:
                         damage = self._damage2
-                    projectile = Projectile(tower[0] + self._type1.get_width() // 2, tower[1] + self._type1.get_height() // 2, target, damage)
+                    projectile = Projectile((tower[0] + self._type1.get_width() // 2), (tower[1] + self._type1.get_height() // 2), target, damage)
                     self._projectiles.append(projectile)
                     self._cooldown_times[tower] = current_time
+        
+        new_enemies = []
         for enemy in enemies:
-            if enemy[2] <= 0:
+            if enemy[2] > 0:
+                new_enemies.append(enemy)
+            else:
                 self._money += 15
-        return [enemy for enemy in enemies if enemy[2] > 0]
+        return new_enemies
     
     def update_projectiles(self, enemies):
         for projectile in self._projectiles[:]:
             projectile.move()
             if projectile.check_collision():
-                for enemy in enemies:
-                    if (enemy[0], enemy[1]) == projectile._target: 
-                        enemy[2] -= projectile.damage
-                        self._projectiles.remove(projectile)
-                        break
+                if projectile._target[2] > 0:
+                    projectile._target[2] -= projectile.damage 
+                self._projectiles.remove(projectile)
+    
     def newTarget(self, enemies, tower):
         for enemy in enemies:                   
             if self.inRange(tower, enemy):   
@@ -223,7 +227,7 @@ class MainLoop:
         self._game_screen.blit(self._display_money, (100,25))
         self._display_round = self.__font.render("Round:" + str(self.__enemyGroup._round), True, (255,255,255))
         self._game_screen.blit(self._display_round, (1100,25))
-
+    
     def drawTowerbox(self):
         draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
         draw.rect(self._game_screen, (255, 255, 255), self.__tower1_rect)  # this is the white rectangle for the outline
@@ -269,7 +273,7 @@ class MainLoop:
             self.__tower_selection.drawTower_preview(self._game_screen,mouse_pos) # will run the tower box function using the screen and pos as parameters
             
             for projectile in self.__tower_selection._projectiles:
-                projectile.draw(self._game_screen) 
+                projectile.draw(self._game_screen)
             
             self.__enemyGroup.updateEnemies(self._game_screen)       
             self.displayStats()
