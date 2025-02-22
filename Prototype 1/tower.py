@@ -90,7 +90,7 @@ class Tower():                              # creates the tower class
             if projectile.check_collision():
                 if projectile._target[2] > 0:
                     projectile._target[2] -= projectile.damage
-                    if projectile._target[2] <= 0:  # Check for death HERE
+                    if projectile._target[2] <= 0: 
                         self._money += 15
                 self._projectiles.remove(projectile)
     
