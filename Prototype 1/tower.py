@@ -82,8 +82,6 @@ class Tower():                              # creates the tower class
         for enemy in enemies:
             if enemy[2] > 0:
                 new_enemies.append(enemy)
-            else:
-                self._money += 15
         return new_enemies
     
     def update_projectiles(self, enemies):
@@ -91,7 +89,9 @@ class Tower():                              # creates the tower class
             projectile.move()
             if projectile.check_collision():
                 if projectile._target[2] > 0:
-                    projectile._target[2] -= projectile.damage 
+                    projectile._target[2] -= projectile.damage
+                    if projectile._target[2] <= 0:  # Check for death HERE
+                        self._money += 15
                 self._projectiles.remove(projectile)
     
     def newTarget(self, enemies, tower):
