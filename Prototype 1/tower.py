@@ -69,7 +69,7 @@ class Tower():                              # creates the tower class
         for tower in self._towers:
             target = self.newTarget(enemies, tower)
             if target:
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 500:
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 400:
                     if tower[2] == self._type1:
                         damage = self._damage1
                     else:
@@ -91,7 +91,7 @@ class Tower():                              # creates the tower class
                 if projectile._target[2] > 0:
                     projectile._target[2] -= projectile.damage
                     if projectile._target[2] <= 0: 
-                        self._money += 15
+                        self._money += 30
                 self._projectiles.remove(projectile)
     
     def newTarget(self, enemies, tower):
