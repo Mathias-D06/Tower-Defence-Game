@@ -13,34 +13,34 @@ class Projectile:
         self._x = x
         self._y = y
         self._target = target
-        self._original_image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")
-        self._image = self._original_image 
+        self._original_image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")  # loads the image
+        self._image = self._original_image                         # creates a copy of the original image       
         self.__speed = 5
-        self.damage = damage
-        self.collision_radius = 10
+        self.damage = damage                                    # sets the damage of the projectile
+        self.collision_radius = 10                             #  sets the collision radius of the projectile
 
     def move(self):
         if self._target:
-            dx = self._target[0] - self._x 
-            dy = self._target[1] - self._y 
-            distance = math.sqrt(dx**2 + dy**2)
-            if distance > 0:
-                self._x += self.__speed * dx / distance
-                self._y += self.__speed * dy / distance
-                angle = math.degrees(math.atan2(-dy, dx)) -90
-                self._image = transform.rotate(self._original_image, angle)
+            dx = self._target[0] - self._x                      # sets the change in x using the target and tower position
+            dy = self._target[1] - self._y                              # same for the change in y
+            distance = math.sqrt(dx**2 + dy**2)                       # calculates the distance using trig
+            if distance > 0:                                        # if the projectile has not collided
+                self._x += self.__speed * dx / distance                 # change the x position 
+                self._y += self.__speed * dy / distance                    # same for y
+                angle = math.degrees(math.atan2(-dy, dx)) -90           # calculate the angle of the projectile and account for image rotation
+                self._image = transform.rotate(self._original_image, angle)     # change the image rotation
 
     def check_collision(self):
-        if self._target:
-            dx = self._target[0] - self._x
+        if self._target:                                            # same as above for move
+            dx = self._target[0] - self._x                      
             dy = self._target[1] - self._y
             distance = math.sqrt(dx**2 + dy**2)
-            return distance < self.collision_radius
-        return False
+            return distance < self.collision_radius                 # check if the projectile has collided
+        return False                                            # if it has not collided return false
 
     def draw(self, game_screen):
-        rect = self._image.get_rect(center=(self._x, self._y))
-        game_screen.blit(self._image, rect)
+        rect = self._image.get_rect(center=(self._x, self._y))      # creates a rect around the image
+        game_screen.blit(self._image, rect)                            # blit the image to the screen
 
 class Tower():                              # creates the tower class
     def __init__(self):
@@ -65,40 +65,40 @@ class Tower():                              # creates the tower class
         return distance <= self.__range                    
     
     def attack(self, enemies):
-        current_time = time.get_ticks()
-        for tower in self._towers:
-            target = self.newTarget(enemies, tower)
-            if target:
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 400:
+        current_time = time.get_ticks()                          # get the current time
+        for tower in self._towers:                             # loop through the towers
+            target = self.newTarget(enemies, tower)                    # find the new target
+            if target:                                                  #  if there is a target
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 400: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
                     if tower[2] == self._type1:
-                        damage = self._damage1
+                        damage = self._damage1              # if the tower is the first type set the damage to 40
                     else:
-                        damage = self._damage2
-                    projectile = Projectile((tower[0] + self._type1.get_width() // 2), (tower[1] + self._type1.get_height() // 2), target, damage)
-                    self._projectiles.append(projectile)
-                    self._cooldown_times[tower] = current_time
+                        damage = self._damage2              # if the tower is the second type set the damage to 65
+                    projectile = Projectile((tower[0] + self._type1.get_width() // 2), (tower[1] + self._type1.get_height() // 2), target, damage) # create an instance of a projectile 
+                    self._projectiles.append(projectile)                            # add the projectile to the list of projectiles
+                    self._cooldown_times[tower] = current_time                      # add the tower to the cooldown times
         
-        new_enemies = []
-        for enemy in enemies:
-            if enemy[2] > 0:
-                new_enemies.append(enemy)
-        return new_enemies
+        new_enemies = []                                            # create a new list of enemies
+        for enemy in enemies:                                       # loop through the enemies
+            if enemy[2] > 0:                                        #  if the enemy is still alive
+                new_enemies.append(enemy)                           #  add the enemy to the new list
+        return new_enemies                                          # return the new list
     
     def update_projectiles(self, enemies):
-        for projectile in self._projectiles[:]:
-            projectile.move()
-            if projectile.check_collision():
-                if projectile._target[2] > 0:
-                    projectile._target[2] -= projectile.damage
-                    if projectile._target[2] <= 0: 
-                        self._money += 30
-                self._projectiles.remove(projectile)
+        for projectile in self._projectiles[:]:                 # loop through the projectiles and create a copy of the list
+            projectile.move()                                    
+            if projectile.check_collision():                            # check if the projectile has collided using check_collision()
+                if projectile._target[2] > 0:                           # if the enemy target is still alive
+                    projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
+                    if projectile._target[2] <= 0:                 
+                        self._money += 30     
+                self._projectiles.remove(projectile)                    # remove the projectile from the list
     
     def newTarget(self, enemies, tower):
-        for enemy in enemies:                   
-            if self.inRange(tower, enemy):   
-                return enemy
-        return None
+        for enemy in enemies:                                       # loop through the enemies
+            if self.inRange(tower, enemy):                      # if the enemy is in range of the tower
+                return enemy                                        # return the enemy
+        return None                                                 # if there is no enemy in range return None
 
 class TowerSelection(Tower):                            # class specific for the selection of towers by the player
     def __init__(self):
