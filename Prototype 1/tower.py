@@ -167,7 +167,7 @@ class EnemyGroup:
         self._enemies = []                  # the enemy list is initialised
         self._number = 3
         self._spawn = True
-        self._interval = 5                                                   
+        self._interval = 4                                                   
     
     def take_damage(self,damage):       
         self._health -= damage          # will reduce the health by the damage inflicted
@@ -177,8 +177,8 @@ class EnemyGroup:
         if self._round % self._interval == 0:
             self._number += 1                      
         self._speed = 0.3                       # sets the initial speed to 0.3
-        spacing = 25                        # creates a 25px spacing between the enemies
-        self.__numEnemies = min(self._number, 20)  # limit to 20 enemies per round
+        spacing = 25  + (self._speed * 40)                        # creates a 25px spacing between the enemies then dynamically adjusts it
+        self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
             random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
