@@ -15,7 +15,7 @@ class Projectile:
         self._target = target
         self._original_image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile251.png")  # loads the image
         self._image = self._original_image                         # creates a copy of the original image       
-        self.__speed = 5
+        self.__speed = 10
         self.damage = damage                                    # sets the damage of the projectile
         self.collision_radius = 10                             #  sets the collision radius of the projectile
 
@@ -44,9 +44,9 @@ class Projectile:
 
 class Tower():                              # creates the tower class
     def __init__(self):
-        self.__range = 100                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
-        self._damage1 = 40
-        self._damage2 = 65
+        self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
+        self._damage1 = 30
+        self._damage2 = 50
         self._type1 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile250.png")
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
@@ -66,10 +66,12 @@ class Tower():                              # creates the tower class
     
     def attack(self, enemies):
         current_time = time.get_ticks()                          # get the current time
+        targeted_enemies = set()                                # Keep track of targeted enemies
         for tower in self._towers:                             # loop through the towers
-            target = self.newTarget(enemies, tower)                    # find the new target
+            target = self.newTarget(enemies, tower, targeted_enemies)                    # find the new target
             if target:                                                  #  if there is a target
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 400: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
+                targeted_enemies.add(id(target))                            # Add the "id" of the target
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 300: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
                     if tower[2] == self._type1:
                         damage = self._damage1              # if the tower is the first type set the damage to 40
                     else:
@@ -85,18 +87,22 @@ class Tower():                              # creates the tower class
         return new_enemies                                          # return the new list
     
     def update_projectiles(self, enemies):
+        living_enemy_ids = {id(enemy) for enemy in enemies}
         for projectile in self._projectiles[:]:                 # loop through the projectiles and create a copy of the list
-            projectile.move()                                    
+            projectile.move()
+            if projectile._target is None or id(projectile._target) not in living_enemy_ids:          # if it has no target and the enemy is dead
+                self._projectiles.remove(projectile)                    # remove the projectile from the list
+                continue                                                # Skip to the next projectile                                    
             if projectile.check_collision():                            # check if the projectile has collided using check_collision()
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
                     if projectile._target[2] <= 0:                 
                         self._money += 30     
-                self._projectiles.remove(projectile)                    # remove the projectile from the list
+                self._projectiles.remove(projectile)                    # same as above
     
-    def newTarget(self, enemies, tower):
+    def newTarget(self, enemies, tower, targeted_enemies):
         for enemy in enemies:                                       # loop through the enemies
-            if self.inRange(tower, enemy):                      # if the enemy is in range of the tower
+            if self.inRange(tower, enemy) and id(enemy) not in targeted_enemies:                      # if the enemy is in range of the tower
                 return enemy                                        # return the enemy
         return None                                                 # if there is no enemy in range return None
 
@@ -155,7 +161,7 @@ class TowerSelection(Tower):                            # class specific for the
 class EnemyGroup:    
     def __init__(self):
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
-        self._health = 40                                   # the health is set to be a constant
+        self._health = 30                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 0
         self._speed = 0                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
