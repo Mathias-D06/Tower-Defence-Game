@@ -53,7 +53,7 @@ class Tower():                              # creates the tower class
         self._type2_cost = 200
         self._towers = []                                       # initialsies the towers list
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
-        self._money = 250                                # set money to the starting number
+        self._money = 200                                # set money to the starting number
         self._projectiles = []
     
     def inRange(self,tower,enemy):
@@ -97,7 +97,7 @@ class Tower():                              # creates the tower class
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
                     if projectile._target[2] <= 0:                 
-                        self._money += 30     
+                        self._money += 15     
                 self._projectiles.remove(projectile)                    # same as above
     
     def newTarget(self, enemies, tower, targeted_enemies):
@@ -166,15 +166,16 @@ class EnemyGroup:
         self._speed = 0                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
         self._number = 3
-        self._spawn = True                                                   
+        self._spawn = True
+        self._interval = 5                                                   
     
     def take_damage(self,damage):       
         self._health -= damage          # will reduce the health by the damage inflicted
         return self._health <= 0        # returns whether the enemy is alive or not
     
     def spawn_enemy(self):
-        self._number += 1                       # increases the number of enemies each round  
-        self.__numEnemies = self._number                        
+        if self._round % self._interval == 0:
+            self._number += 1                      
         self._speed = 0.3                       # sets the initial speed to 0.3
         spacing = 25                        # creates a 25px spacing between the enemies
         self.__numEnemies = min(self._number, 20)  # limit to 20 enemies per round
