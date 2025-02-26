@@ -102,7 +102,7 @@ class Tower():                              # creates the tower class
     
     def newTarget(self, enemies, tower, targeted_enemies):
         for enemy in enemies:                                       # loop through the enemies
-            if self.inRange(tower, enemy) and id(enemy) not in targeted_enemies:                      # if the enemy is in range of the tower
+            if self.inRange(tower, enemy) and id(enemy) not in targeted_enemies:   # if the enemy is in range of the tower
                 return enemy                                        # return the enemy
         return None                                                 # if there is no enemy in range return None
 
