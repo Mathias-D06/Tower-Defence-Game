@@ -55,6 +55,7 @@ class Tower():                              # creates the tower class
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
         self._money = 200                                # set money to the starting number
         self._projectiles = []
+        self._score = 0
     
     def inRange(self,tower,enemy):
         centre_x = tower[0] + self._type1.get_width() // 2              # check for the centre of the tower image x co-ordinate
@@ -71,7 +72,7 @@ class Tower():                              # creates the tower class
             target = self.newTarget(enemies, tower, targeted_enemies)                    # find the new target
             if target:                                                  #  if there is a target
                 targeted_enemies.add(id(target))                            # Add the "id" of the target
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 300: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 450: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
                     if tower[2] == self._type1:
                         damage = self._damage1              # if the tower is the first type set the damage to 40
                     else:
@@ -97,7 +98,8 @@ class Tower():                              # creates the tower class
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
                     if projectile._target[2] <= 0:                 
-                        self._money += 15     
+                        self._money += 20
+                        self._score += 100     
                 self._projectiles.remove(projectile)                    # same as above
     
     def newTarget(self, enemies, tower, targeted_enemies):
@@ -176,7 +178,7 @@ class EnemyGroup:
     def spawn_enemy(self):
         if self._round % self._interval == 0:
             self._number += 1                      
-        self._speed = 0.3                       # sets the initial speed to 0.3
+        self._speed = 0.4                       # sets the initial speed to 0.4
         spacing = 25  + (self._speed * 40)                        # creates a 25px spacing between the enemies then dynamically adjusts it
         self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
@@ -232,6 +234,8 @@ class MainLoop:
     def displayStats(self):
         self._display_money = self.__font.render("Money:" + str(self.__tower_selection._money), True, (255,255,255))
         self._game_screen.blit(self._display_money, (100,25))
+        self._display_score = self.__font.render("Score:" + str(self.__tower_selection._score), True, (255,255,255))
+        self._game_screen.blit(self._display_score, (1100,75))
         self._display_round = self.__font.render("Round:" + str(self.__enemyGroup._round), True, (255,255,255))
         self._game_screen.blit(self._display_round, (1100,25))
     
