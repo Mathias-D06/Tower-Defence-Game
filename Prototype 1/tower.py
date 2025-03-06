@@ -184,7 +184,7 @@ class EnemyGroup:
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
             random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
-            self._health += (self._round * 2)                         # increase the health 
+            self._health += self._round *                         # increase the health 
             self._enemy = [start_x,random_y,self._health]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
