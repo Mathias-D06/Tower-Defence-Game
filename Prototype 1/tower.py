@@ -45,8 +45,8 @@ class Projectile:
 class Tower():                              # creates the tower class
     def __init__(self):
         self.__range = 150                 #sets the tower range and damage to a set number, the position will depend on where the tower is placed.
-        self._damage1 = 35
-        self._damage2 = 60
+        self._damage1 = 40
+        self._damage2 = 65
         self._type1 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile249.png")        # the sprites for the 2 different towers must be loaded as they are pre made images from an asset pack 
         self._type2 = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile250.png")
         self._type1_cost = 100                                      # initialises the cost for the 2 towers
@@ -71,7 +71,7 @@ class Tower():                              # creates the tower class
             target = self.newTarget(enemies, tower, targeted_enemies)                    # find the new target
             if target:                                                  #  if there is a target
                 targeted_enemies.add(id(target))                            # Add the "id" of the target
-                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 450: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
+                if tower not in self._cooldown_times or current_time - self._cooldown_times[tower] >= 300: # check if the tower is in the cooldown times and if the time since the last attack is greater than 400ms
                     if tower[2] == self._type1:
                         damage = self._damage1              # if the tower is the first type set the damage to 40
                     else:
@@ -102,7 +102,7 @@ class Tower():                              # creates the tower class
     
     def newTarget(self, enemies, tower, targeted_enemies):
         for enemy in enemies:                                       # loop through the enemies
-            if self.inRange(tower, enemy) and id(enemy) not in targeted_enemies:   # if the enemy is in range of the tower
+            if self.inRange(tower, enemy) and id(enemy) not in targeted_enemies:                      # if the enemy is in range of the tower
                 return enemy                                        # return the enemy
         return None                                                 # if there is no enemy in range return None
 
@@ -176,13 +176,13 @@ class EnemyGroup:
     def spawn_enemy(self):
         if self._round % self._interval == 0:
             self._number += 1                      
-        self._speed = 0.4                       # sets the initial speed to 0.3
-        spacing = 25  + (self._speed * 40)             # creates a 25px spacing between the enemies then dynamically adjusts it
+        self._speed = 0.3                       # sets the initial speed to 0.3
+        spacing = 25  + (self._speed * 40)                        # creates a 25px spacing between the enemies then dynamically adjusts it
         self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
             random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
-            self._health = (self._round * 20)                         # increase the health 
+            self._health += (self._round * 2)                         # increase the health 
             self._enemy = [start_x,random_y,self._health]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
