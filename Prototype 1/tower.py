@@ -152,6 +152,7 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
                     self._money -= self._type1_cost                                 # deducts the cost
                     self._selected_tower = None                                    # sets it back to none
+                    print("Deducted",self._type1_cost)
 
             elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
                 if self.pos_valid(mouse_pos, self._enemies):
@@ -159,6 +160,7 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
                     self._selected_tower = None
+                    print("Deducted",self._type2_cost)
 
 class EnemyGroup:    
     def __init__(self):
@@ -273,9 +275,7 @@ class MainLoop:
             
             if not self.__enemyGroup._enemies:          # if there are no more enemies in the array
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
-                self.__enemyGroup._round+=1 
-                print("Health:",self.__enemyGroup._health)
-                print("Round being updated")          
+                self.__enemyGroup._round+=1         
                        
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self.__tower_selection.update_projectiles(self.__enemyGroup._enemies)
