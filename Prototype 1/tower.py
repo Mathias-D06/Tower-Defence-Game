@@ -273,7 +273,9 @@ class MainLoop:
             
             if not self.__enemyGroup._enemies:          # if there are no more enemies in the array
                 self.__enemyGroup.spawn_enemy()         # spawn in the next wave of enemies
-                self.__enemyGroup._round+=1           
+                self.__enemyGroup._round+=1 
+                print("Health:",self.__enemyGroup._health)
+                print("Round being updated")          
                        
             self.__enemyGroup._enemies = self.__tower_selection.attack(self.__enemyGroup._enemies)
             self.__tower_selection.update_projectiles(self.__enemyGroup._enemies)
