@@ -98,14 +98,8 @@ class Tower():                              # creates the tower class
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
                     if projectile._target[2] <= 0:                 
-<<<<<<< HEAD
-                        self._money += 15
-                        self._score += 100
-                        print("score updated by 100")     
-=======
                         self._money += 20
                         self._score += 100     
->>>>>>> a3bfd11a87e8dc14dffc1d2404c37df4939d7e25
                 self._projectiles.remove(projectile)                    # same as above
     
     def newTarget(self, enemies, tower, targeted_enemies):
@@ -158,7 +152,10 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
                     self._money -= self._type1_cost                                 # deducts the cost
                     self._selected_tower = None                                    # sets it back to none
-                    print("Deducted",self._type1_cost)
+                    print("Deducted",str(self._type1_cost))
+            
+            if self._money < self._type1_cost:
+                print("not enough for tower 1 so its not placed")
 
             elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
                 if self.pos_valid(mouse_pos, self._enemies):
@@ -166,7 +163,7 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
                     self._selected_tower = None
-                    print("Deducted",self._type2_cost)
+                    print("Deducted",str(self._type2_cost))
 
 class EnemyGroup:    
     def __init__(self):
