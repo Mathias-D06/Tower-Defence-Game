@@ -55,6 +55,7 @@ class Tower():                              # creates the tower class
         self._cooldown_times = {}                           # create a dictionary for the cooldown times
         self._money = 200                                # set money to the starting number
         self._projectiles = []
+        self._score = 0
     
     def inRange(self,tower,enemy):
         centre_x = tower[0] + self._type1.get_width() // 2              # check for the centre of the tower image x co-ordinate
@@ -97,7 +98,9 @@ class Tower():                              # creates the tower class
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
                     if projectile._target[2] <= 0:                 
-                        self._money += 15     
+                        self._money += 15
+                        self._score += 100
+                        print("score updated by 100")     
                 self._projectiles.remove(projectile)                    # same as above
     
     def newTarget(self, enemies, tower, targeted_enemies):
@@ -234,6 +237,8 @@ class MainLoop:
         self._game_screen.blit(self._display_money, (100,25))
         self._display_round = self.__font.render("Round:" + str(self.__enemyGroup._round), True, (255,255,255))
         self._game_screen.blit(self._display_round, (1100,25))
+        self._display_score = self.__font.render("Score:" + str(self.__tower_selection._score), True, (255,255,255))
+        self._game_screen.blit(self._display_score, (1100,75))
     
     def drawTowerbox(self):
         draw.rect(self._game_screen, (0,0,0), self.__select_rect)     # this draws the black rectangle
