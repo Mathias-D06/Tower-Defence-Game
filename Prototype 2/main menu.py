@@ -22,6 +22,7 @@ class VolumeSlider:
     def moveSlider(self, mouse_pos):
         self._button_rect.centerx = mouse_pos[0]
         self.volumeChange()
+        print(self._button_rect.centerx)
 
     def drawSlider(self, screen):
         draw.rect(screen, (0, 0, 0), self._box_rect)
@@ -94,6 +95,8 @@ class SettingsScreen(MenuLoop):
         self._settingsScreen.blit(self.__back_button, self.__back_rect)
         if self.__back_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
             self.__settings = False
+            print("pressed return")
+            print("going back to main menu")
             return "menu"
     
     def Text(self):

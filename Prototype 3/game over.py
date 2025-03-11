@@ -19,11 +19,6 @@ class Main:
         self.__retry = self.__small_font.render("Play Again", True, (255,255,255))
         self.__retry_rect = self.__retry.get_rect(topleft=(200, 500))
         self._game_screen.blit(self.__retry,self.__retry_rect)
-    
-    def ReplayGame(self):
-        self.__replay = self.__small_font.render("Replay", True, (255,255,255))
-        self.__replay_rect = self.__retry.get_rect(topleft=(900, 500))
-        self._game_screen.blit(self.__replay,self.__replay_rect)
 
     def Collision(self,mouse_pos):
         if self.__retry_rect.collidepoint(mouse_pos) and mouse.get_pressed()[0]:
@@ -40,7 +35,6 @@ class Main:
             self._game_screen.blit(self.__background,(0,0))
             self.Game_Over()
             self.Retry()
-            self.ReplayGame()
             self.Collision(mouse_pos)
             display.flip()
 
