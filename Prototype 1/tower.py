@@ -210,8 +210,6 @@ class EnemyGroup:
                 enemy[1] += self._speed
             else:
                 enemy[0] += self._speed
-        if enemy[0] > 1288:
-            self._spawn = False
                                  
 class MainLoop:
     def __init__(self):
@@ -253,9 +251,14 @@ class MainLoop:
         self._game_screen.blit(cost2, (730,685))
        
     def gameOver(self):
-        if self.__enemyGroup._spawn == False:
-            subprocess.Popen(['python', 'Prototype 3/game over.py'])
-            self.__exit_game = True
+        for enemy in self.__enemyGroup._enemies:
+            if enemy[0] > 1288 and enemy[2] > 0:
+                subprocess.Popen(['python', 'Prototype 3/game over.py'])
+                self.__exit_game = True
+                return         
+        if not self.__enemyGroup._spawn:
+                subprocess.Popen(['python', 'Prototype 3/game over.py'])
+                self.__exit_game = True
     
     def gamescreen(self):
         while not self.__exit_game:
@@ -287,6 +290,11 @@ class MainLoop:
             
             for projectile in self.__tower_selection._projectiles:
                 projectile.draw(self._game_screen)
+            
+            for enemy in self.__enemyGroup._enemies:
+                if enemy[0] > 1288 and enemy[2] > 0:
+                   self.gameOver()   
+                   break
             
             self.__enemyGroup.updateEnemies(self._game_screen)       
             self.displayStats()
