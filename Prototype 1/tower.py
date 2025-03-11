@@ -119,10 +119,10 @@ class TowerSelection(Tower):                            # class specific for the
         self._enemies = []
     
     def select_tower(self,mouse_pos):
-              if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
-                  self._selected_tower = self._type1                                    # set it to type 1
-              elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  
-                  self._selected_tower = self._type2
+        if self._tower1_rect and self._tower1_rect.collidepoint(mouse_pos):     # check it see if the mouse is touching the tower rect
+            self._selected_tower = self._type1                                    # set it to type 1
+        elif self._tower2_rect and self._tower2_rect.collidepoint(mouse_pos):      # do it for the other tower  
+            self._selected_tower = self._type2
     
     def drawTower_preview(self,game_screen,mouse_pos):
         if self._selected_tower:                                                    # checks to see if there is a selected tower
@@ -152,10 +152,6 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type1)) # adds the current towers mouse positions and type to the array
                     self._money -= self._type1_cost                                 # deducts the cost
                     self._selected_tower = None                                    # sets it back to none
-                    print("Deducted",str(self._type1_cost))
-            
-            if self._money < self._type1_cost:
-                print("not enough for tower 1 so its not placed")
 
             elif self._selected_tower == self._type2 and self._money >= self._type2_cost:   # the same is repeated for the second type
                 if self.pos_valid(mouse_pos, self._enemies):
@@ -163,7 +159,6 @@ class TowerSelection(Tower):                            # class specific for the
                     self._towers.append((mouse_pos[0], mouse_pos[1], self._type2))
                     self._money -= self._type2_cost
                     self._selected_tower = None
-                    print("Deducted",str(self._type2_cost))
 
 class EnemyGroup:    
     def __init__(self):
