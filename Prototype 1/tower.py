@@ -251,13 +251,13 @@ class MainLoop:
         self._game_screen.blit(cost2, (730,685))
        
     def gameOver(self):
-        for enemy in self.__enemyGroup._enemies:
-            if enemy[0] > 1288 and enemy[2] > 0:
-                subprocess.Popen(['python', 'Prototype 3/game over.py'])
-                self.__exit_game = True
+        for enemy in self.__enemyGroup._enemies:                        # it will iterate through all the enemies
+            if enemy[0] > 1288 and enemy[2] > 0:                                # it will check to see if its alive and has reached the boundry
+                subprocess.Popen(['python', 'Prototype 3/game over.py'])        # it will open the game over screen
+                self.__exit_game = True                                             # it will close the game
                 return         
-        if not self.__enemyGroup._spawn:
-                subprocess.Popen(['python', 'Prototype 3/game over.py'])
+        if not self.__enemyGroup._spawn:                                        # as an aditional check it will see of the spawn function hasn't been called 
+                subprocess.Popen(['python', 'Prototype 3/game over.py'])           # it will then open the game over screen
                 self.__exit_game = True
     
     def gamescreen(self):
