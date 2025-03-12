@@ -257,8 +257,8 @@ class MainLoop:
                 self.__exit_game = True                                             # it will close the game
                 return         
         if not self.__enemyGroup._spawn:                                        # as an aditional check it will see of the spawn function hasn't been called 
-                subprocess.Popen(['python', 'Prototype 3/game over.py'])           # it will then open the game over screen
-                self.__exit_game = True
+            subprocess.Popen(['python', 'Prototype 3/game over.py'])           # it will then open the game over screen
+            self.__exit_game = True
     
     def gamescreen(self):
         while not self.__exit_game:
