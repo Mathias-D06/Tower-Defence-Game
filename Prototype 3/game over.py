@@ -17,7 +17,7 @@ class Main:
 
     def Retry(self):
         self.__retry = self.__small_font.render("Play Again", True, (255,255,255))
-        self.__retry_rect = self.__retry.get_rect(topleft=(200, 500))
+        self.__retry_rect = self.__retry.get_rect(topleft=(550, 500))
         self._game_screen.blit(self.__retry,self.__retry_rect)
 
     def Collision(self,mouse_pos):
