@@ -22,7 +22,6 @@ class VolumeSlider:
     def moveSlider(self, mouse_pos):
         self._button_rect.centerx = mouse_pos[0]
         self.volumeChange()
-        print(self._button_rect.centerx)
 
     def drawSlider(self, screen):
         draw.rect(screen, (0, 0, 0), self._box_rect)
@@ -37,6 +36,7 @@ class VolumeSlider:
         self.volume = (self.getValue() / 100)
         mixer.music.set_volume(self.volume)
         self.current_volume = mixer.music.get_volume()
+        print(self.volume * 100)
 
 class MenuLoop:
     def __init__(self):
