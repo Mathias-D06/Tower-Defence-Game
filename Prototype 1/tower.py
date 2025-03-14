@@ -97,10 +97,12 @@ class Tower():                              # creates the tower class
             if projectile.check_collision():                            # check if the projectile has collided using check_collision()
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
+                    print("Damage dealt:",projectile.damage)
                     if projectile._target[2] <= 0:                 
                         self._money += 20
                         self._score += 100     
                 self._projectiles.remove(projectile)                    # same as above
+                print("Projectile removed")
     
     def newTarget(self, enemies, tower, targeted_enemies):
         for enemy in enemies:                                       # loop through the enemies
