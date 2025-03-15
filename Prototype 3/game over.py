@@ -1,6 +1,7 @@
 from pygame import *
 font.init()
 import subprocess
+display.set_caption("Game Over")
 
 class Main:
     def __init__(self):

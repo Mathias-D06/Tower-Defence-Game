@@ -31,7 +31,7 @@ class Projectile:
                 self._image = transform.rotate(self._original_image, angle)     # change the image rotation
 
     def check_collision(self):
-        if self._target:                                            # same as above for move
+        if self._target:                                               # same as above for move
             dx = self._target[0] - self._x                      
             dy = self._target[1] - self._y
             distance = math.sqrt(dx**2 + dy**2)
@@ -82,7 +82,7 @@ class Tower():                              # creates the tower class
                     self._cooldown_times[tower] = current_time                      # add the tower to the cooldown times
         
         new_enemies = []                                            # create a new list of enemies
-        for enemy in enemies:                                       # loop through the enemies
+        for enemy in enemies:                                       # loop through the enemies      
             if enemy[2] > 0:                                        #  if the enemy is still alive
                 new_enemies.append(enemy)                           #  add the enemy to the new list
         return new_enemies                                          # return the new list
@@ -97,12 +97,10 @@ class Tower():                              # creates the tower class
             if projectile.check_collision():                            # check if the projectile has collided using check_collision()
                 if projectile._target[2] > 0:                           # if the enemy target is still alive
                     projectile._target[2] -= projectile.damage          # reduce the enemy health by the projectile damage
-                    print("Damage dealt:",projectile.damage)
                     if projectile._target[2] <= 0:                 
                         self._money += 20
                         self._score += 100     
                 self._projectiles.remove(projectile)                    # same as above
-                print("Projectile removed")
     
     def newTarget(self, enemies, tower, targeted_enemies):
         for enemy in enemies:                                       # loop through the enemies
@@ -295,6 +293,7 @@ class MainLoop:
             
             for enemy in self.__enemyGroup._enemies:
                 if enemy[0] > 1288 and enemy[2] > 0:
+                   print("Game Over","Opening Game Over Screen")
                    self.gameOver()   
                    break
             
