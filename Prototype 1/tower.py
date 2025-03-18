@@ -165,7 +165,7 @@ class EnemyGroup:
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._current_health = 30                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 0
-        self._speed = 1.5                                         # the enemy speed is set to 0
+        self._speed = 1.2                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
         self._number = 3
         self._spawn = True
