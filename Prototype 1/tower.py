@@ -163,53 +163,48 @@ class TowerSelection(Tower):                            # class specific for the
 class EnemyGroup:    
     def __init__(self):
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
-        self._health = 30                                   # the health is set to be a constant
+        self._current_health = 30                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 0
-        self._speed = 0                                         # the enemy speed is set to 0
+        self._speed = 1                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
         self._number = 3
         self._spawn = True
         self._interval = 4                                                   
     
-    def take_damage(self,damage):       
-        self._health -= damage          # will reduce the health by the damage inflicted
-        return self._health <= 0        # returns whether the enemy is alive or not
-    
     def spawn_enemy(self):
         if self._round % self._interval == 0:
             self._number += 1                      
-        self._speed = 0.4                       # sets the initial speed to 0.4
-        spacing = 25  + (self._speed * 40)                        # creates a 25px spacing between the enemies then dynamically adjusts it
+        spacing = 25                        # creates a 25px spacing between the enemies then dynamically adjusts it
+        self._current_health += (self._round * 3)
         self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
             random_y = random.randint(379,409)          # choses a random y co-ordinate for the enemies between set values
-            self._health += self._round                        # increase the health 
-            self._enemy = [start_x,random_y,self._health]             # the positions of the enemies will be stored in an array
+            self._enemy = [start_x,random_y,self._current_health,self._speed]             # the positions of the enemies will be stored in an array
             self._enemies.append(self._enemy)             # the position of the enemies will be stored in a list
     
     def updateEnemies(self,game_screen):
         alive_enemies = []                    # this is the list that only holds the alive enemies, it holds the x and y positions of the enemies
-        for self._enemy in self._enemies:             # iterates though the original list
-            if self._enemy[2] > 0:                   # checks the enemies that are alive 
-                alive_enemies.append(self._enemy)       # adds it to the list
+        for enemy in self._enemies:             # iterates though the original list
+            if enemy[2] > 0:                   # checks the enemies that are alive 
+                alive_enemies.append(enemy)       # adds it to the list
         self._enemies = alive_enemies          # it then updates the older list
-        for self._enemy in self._enemies:                 # iterates through the current enemies
-            self.movement()                            # calls the movement function for the alive ones
-            game_screen.blit(self._image,(self._enemy[0],self._enemy[1]))       # updates the screen removing "dead" enemies
+        for enemy in self._enemies:                 # iterates through the current enemies
+            self.movement(enemy)                            # calls the movement function for the alive ones
+            game_screen.blit(self._image, (enemy[0], enemy[1]))      # updates the screen removing "dead" enemies
     
-    def movement(self):
-        for enemy in self._enemies:                                        # iterates through the alive enemies
-            if enemy[0] < 390:                                          # checks the x position of the enemies
-                enemy[0] += self._speed                                        # if the x poisition is less than 390 it will move the enemy to the right
-            elif enemy[0] >= 390 and enemy[0] <= 395 and enemy[1] > 280:            
-                enemy[1] -= self._speed                                     # The enemy will move up by the set speed
-            elif enemy[1] <= 280 and enemy[0] < 830:
-                enemy[0] += self._speed
-            elif enemy[0] >= 830 and enemy[0] <= 835 and enemy[1] < 395:        # its mostly self explanatory
-                enemy[1] += self._speed
-            else:
-                enemy[0] += self._speed
+    def movement(self,enemy):
+        speed = enemy[3]                                        # iterates through the alive enemies
+        if enemy[0] < 390:                                          # checks the x position of the enemies
+            enemy[0] += speed                                        # if the x poisition is less than 390 it will move the enemy to the right
+        elif enemy[0] >= 390 and enemy[0] <= 395 and enemy[1] > 280:            
+            enemy[1] -= speed                                     # The enemy will move up by the set speed
+        elif enemy[1] <= 280 and enemy[0] < 830:
+            enemy[0] += speed
+        elif enemy[0] >= 830 and enemy[0] <= 835 and enemy[1] < 395:        # its mostly self explanatory
+            enemy[1] += speed
+        else:
+            enemy[0] += speed
                                  
 class MainLoop:
     def __init__(self):
