@@ -165,7 +165,7 @@ class EnemyGroup:
         self._image = image.load("Prototype 1\Prototype 1 Assets/towerDefense_tile248.png") # the sprite of the enemies are pre set like the tower images
         self._current_health = 30                                   # the health is set to be a constant
         self._round = 0                                          # sets the number of rounds to 0
-        self._speed = 1                                         # the enemy speed is set to 0
+        self._speed = 1.5                                         # the enemy speed is set to 0
         self._enemies = []                  # the enemy list is initialised
         self._number = 3
         self._spawn = True
@@ -174,8 +174,8 @@ class EnemyGroup:
     def spawn_enemy(self):
         if self._round % self._interval == 0:
             self._number += 1                      
-        spacing = 25                        # creates a 25px spacing between the enemies then dynamically adjusts it
-        self._current_health += (self._round * 3)
+        spacing = 35                        # creates a 25px spacing between the enemies then dynamically adjusts it
+        self._current_health += (self._round * 4)
         self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
