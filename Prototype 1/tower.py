@@ -175,7 +175,7 @@ class EnemyGroup:
         if self._round % self._interval == 0:
             self._number += 1                      
         spacing = 35                        # creates a 25px spacing between the enemies then dynamically adjusts it
-        self._current_health += (self._round * 4)
+        self._current_health += (self._round * 10)
         self.__numEnemies = min(self._number, 15)  # limit to 15 enemies per round
         for _ in range(self.__numEnemies):             # for the number of current enemies it will repeat the below code
             start_x = 0 - (_ * spacing)             # the x co-ordinates to allow for spacing between the enemies
