@@ -101,5 +101,5 @@ Tower, enemy and projectile sprites come from a free tower defence asset pack. C
 
 ## Use of AI
 
-The game's code, assets selection and prototypes are my own work. Claude (Anthropic's AI assistant)
+The game's code and all three prototypes are my own work. Claude (Anthropic's AI assistant)
 was used only to write this README.
