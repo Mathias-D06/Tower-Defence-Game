@@ -98,3 +98,8 @@ installed, because the menu launches the other screens with that command.
 
 Tower, enemy and projectile sprites come from a free tower defence asset pack. Code by
 [Mathias Dawit](https://github.com/Mathias-D06).
+
+## Use of AI
+
+The game's code, assets selection and prototypes are my own work. Claude (Anthropic's AI assistant)
+was used only to write this README.
